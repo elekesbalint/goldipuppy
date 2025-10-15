@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
-
-const DATA_FILE = path.join(process.cwd(), 'data', 'breeds.json');
+import { supabase } from '@/lib/supabase';
 
 // Helper function to create URL-safe slugs
 function createSlug(text: string): string {
@@ -19,12 +16,17 @@ function createSlug(text: string): string {
 // GET - Get all breeds
 export async function GET() {
   try {
-    const fileContents = await fs.readFile(DATA_FILE, 'utf8');
-    const breeds = JSON.parse(fileContents);
-    return NextResponse.json(breeds);
+    const { data, error } = await supabase
+      .from('breeds')
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (error) throw error;
+
+    return NextResponse.json(data || []);
   } catch (error) {
-    // If file doesn't exist, return empty array
-    return NextResponse.json([]);
+    console.error('Error fetching breeds:', error);
+    return NextResponse.json([], { status: 500 });
   }
 }
 
@@ -33,32 +35,35 @@ export async function POST(request: NextRequest) {
   try {
     const newBreed = await request.json();
     
-    // Read existing breeds
-    let breeds = [];
-    try {
-      const fileContents = await fs.readFile(DATA_FILE, 'utf8');
-      breeds = JSON.parse(fileContents);
-    } catch {
-      // File doesn't exist yet, start with empty array
-    }
-    
-    // Add new breed with generated ID and slug
+    // Generate slug from name
     const slug = createSlug(newBreed.name);
-    const breedWithId = {
-      ...newBreed,
-      id: newBreed.id || `breed-${Date.now()}`,
+    
+    const breedData = {
+      name: newBreed.name,
       slug,
+      description: newBreed.description || '',
+      image: newBreed.image || null,
+      size: newBreed.size || null,
+      temperament: newBreed.temperament || null,
+      lifespan: newBreed.lifespan || null,
+      exercise: newBreed.exercise || null,
+      grooming: newBreed.grooming || null,
+      training: newBreed.training || null,
     };
-    
-    breeds.push(breedWithId);
-    
-    // Save to file
-    await fs.writeFile(DATA_FILE, JSON.stringify(breeds, null, 2));
-    
-    return NextResponse.json(breedWithId, { status: 201 });
-  } catch (error) {
+
+    const { data, error } = await supabase
+      .from('breeds')
+      .insert([breedData])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return NextResponse.json(data, { status: 201 });
+  } catch (error: any) {
+    console.error('Error creating breed:', error);
     return NextResponse.json(
-      { error: 'Failed to create breed' },
+      { error: error.message || 'Failed to create breed' },
       { status: 500 }
     );
   }
@@ -69,30 +74,43 @@ export async function PUT(request: NextRequest) {
   try {
     const updatedBreed = await request.json();
     
-    // Read existing breeds
-    const fileContents = await fs.readFile(DATA_FILE, 'utf8');
-    let breeds = JSON.parse(fileContents);
-    
-    // Find and update breed
-    const index = breeds.findIndex((b: any) => b.id === updatedBreed.id);
-    if (index === -1) {
+    if (!updatedBreed.id) {
       return NextResponse.json(
-        { error: 'Breed not found' },
-        { status: 404 }
+        { error: 'Breed ID required' },
+        { status: 400 }
       );
     }
-    
+
     // Update slug if name changed
     const slug = createSlug(updatedBreed.name);
-    breeds[index] = { ...updatedBreed, slug };
     
-    // Save to file
-    await fs.writeFile(DATA_FILE, JSON.stringify(breeds, null, 2));
-    
-    return NextResponse.json(breeds[index]);
-  } catch (error) {
+    const breedData = {
+      name: updatedBreed.name,
+      slug,
+      description: updatedBreed.description || '',
+      image: updatedBreed.image || null,
+      size: updatedBreed.size || null,
+      temperament: updatedBreed.temperament || null,
+      lifespan: updatedBreed.lifespan || null,
+      exercise: updatedBreed.exercise || null,
+      grooming: updatedBreed.grooming || null,
+      training: updatedBreed.training || null,
+    };
+
+    const { data, error } = await supabase
+      .from('breeds')
+      .update(breedData)
+      .eq('id', updatedBreed.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return NextResponse.json(data);
+  } catch (error: any) {
+    console.error('Error updating breed:', error);
     return NextResponse.json(
-      { error: 'Failed to update breed' },
+      { error: error.message || 'Failed to update breed' },
       { status: 500 }
     );
   }
@@ -110,23 +128,20 @@ export async function DELETE(request: NextRequest) {
         { status: 400 }
       );
     }
-    
-    // Read existing breeds
-    const fileContents = await fs.readFile(DATA_FILE, 'utf8');
-    let breeds = JSON.parse(fileContents);
-    
-    // Filter out the breed to delete
-    breeds = breeds.filter((b: any) => b.id !== id);
-    
-    // Save to file
-    await fs.writeFile(DATA_FILE, JSON.stringify(breeds, null, 2));
-    
+
+    const { error } = await supabase
+      .from('breeds')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Error deleting breed:', error);
     return NextResponse.json(
-      { error: 'Failed to delete breed' },
+      { error: error.message || 'Failed to delete breed' },
       { status: 500 }
     );
   }
 }
-

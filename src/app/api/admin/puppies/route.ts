@@ -1,18 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
-
-const DATA_FILE = path.join(process.cwd(), 'data', 'puppies.json');
+import { supabase } from '@/lib/supabase';
 
 // GET - Get all puppies
 export async function GET() {
   try {
-    const fileContents = await fs.readFile(DATA_FILE, 'utf8');
-    const puppies = JSON.parse(fileContents);
-    return NextResponse.json(puppies);
+    const { data, error } = await supabase
+      .from('puppies')
+      .select('*')
+      .order('featured', { ascending: false })
+      .order('name', { ascending: true });
+
+    if (error) throw error;
+
+    return NextResponse.json(data || []);
   } catch (error) {
-    // If file doesn't exist, return empty array
-    return NextResponse.json([]);
+    console.error('Error fetching puppies:', error);
+    return NextResponse.json([], { status: 500 });
   }
 }
 
@@ -21,30 +24,34 @@ export async function POST(request: NextRequest) {
   try {
     const newPuppy = await request.json();
     
-    // Read existing puppies
-    let puppies = [];
-    try {
-      const fileContents = await fs.readFile(DATA_FILE, 'utf8');
-      puppies = JSON.parse(fileContents);
-    } catch {
-      // File doesn't exist yet, start with empty array
-    }
-    
-    // Add new puppy with generated ID
-    const puppyWithId = {
-      ...newPuppy,
-      id: newPuppy.id || `puppy-${Date.now()}`,
+    const puppyData = {
+      name: newPuppy.name,
+      breed: newPuppy.breed,
+      breed_slug: newPuppy.breedSlug || newPuppy.breed_slug,
+      price: Number(newPuppy.price),
+      status: newPuppy.status || 'available',
+      gender: newPuppy.gender,
+      age: newPuppy.age || '',
+      size: newPuppy.size || 'Medium',
+      location: newPuppy.location || '',
+      description: newPuppy.description || '',
+      image: newPuppy.image || '',
+      featured: newPuppy.featured || false,
     };
-    
-    puppies.push(puppyWithId);
-    
-    // Save to file
-    await fs.writeFile(DATA_FILE, JSON.stringify(puppies, null, 2));
-    
-    return NextResponse.json(puppyWithId, { status: 201 });
-  } catch (error) {
+
+    const { data, error } = await supabase
+      .from('puppies')
+      .insert([puppyData])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return NextResponse.json(data, { status: 201 });
+  } catch (error: any) {
+    console.error('Error creating puppy:', error);
     return NextResponse.json(
-      { error: 'Failed to create puppy' },
+      { error: error.message || 'Failed to create puppy' },
       { status: 500 }
     );
   }
@@ -55,28 +62,42 @@ export async function PUT(request: NextRequest) {
   try {
     const updatedPuppy = await request.json();
     
-    // Read existing puppies
-    const fileContents = await fs.readFile(DATA_FILE, 'utf8');
-    let puppies = JSON.parse(fileContents);
-    
-    // Find and update puppy
-    const index = puppies.findIndex((p: any) => p.id === updatedPuppy.id);
-    if (index === -1) {
+    if (!updatedPuppy.id) {
       return NextResponse.json(
-        { error: 'Puppy not found' },
-        { status: 404 }
+        { error: 'Puppy ID required' },
+        { status: 400 }
       );
     }
-    
-    puppies[index] = updatedPuppy;
-    
-    // Save to file
-    await fs.writeFile(DATA_FILE, JSON.stringify(puppies, null, 2));
-    
-    return NextResponse.json(updatedPuppy);
-  } catch (error) {
+
+    const puppyData = {
+      name: updatedPuppy.name,
+      breed: updatedPuppy.breed,
+      breed_slug: updatedPuppy.breedSlug || updatedPuppy.breed_slug,
+      price: Number(updatedPuppy.price),
+      status: updatedPuppy.status || 'available',
+      gender: updatedPuppy.gender,
+      age: updatedPuppy.age || '',
+      size: updatedPuppy.size || 'Medium',
+      location: updatedPuppy.location || '',
+      description: updatedPuppy.description || '',
+      image: updatedPuppy.image || '',
+      featured: updatedPuppy.featured || false,
+    };
+
+    const { data, error } = await supabase
+      .from('puppies')
+      .update(puppyData)
+      .eq('id', updatedPuppy.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return NextResponse.json(data);
+  } catch (error: any) {
+    console.error('Error updating puppy:', error);
     return NextResponse.json(
-      { error: 'Failed to update puppy' },
+      { error: error.message || 'Failed to update puppy' },
       { status: 500 }
     );
   }
@@ -94,23 +115,20 @@ export async function DELETE(request: NextRequest) {
         { status: 400 }
       );
     }
-    
-    // Read existing puppies
-    const fileContents = await fs.readFile(DATA_FILE, 'utf8');
-    let puppies = JSON.parse(fileContents);
-    
-    // Filter out the puppy to delete
-    puppies = puppies.filter((p: any) => p.id !== id);
-    
-    // Save to file
-    await fs.writeFile(DATA_FILE, JSON.stringify(puppies, null, 2));
-    
+
+    const { error } = await supabase
+      .from('puppies')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Error deleting puppy:', error);
     return NextResponse.json(
-      { error: 'Failed to delete puppy' },
+      { error: error.message || 'Failed to delete puppy' },
       { status: 500 }
     );
   }
 }
-
