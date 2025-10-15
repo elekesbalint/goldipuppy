@@ -25,6 +25,7 @@ export default function AdminPuppiesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingPuppy, setEditingPuppy] = useState<Puppy | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   
   // Form state
   const [formData, setFormData] = useState<Partial<Puppy>>({
@@ -316,16 +317,47 @@ export default function AdminPuppiesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kép URL *
+                  Kép
                 </label>
-                <input
-                  type="url"
-                  required
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                  placeholder="https://example.com/image.jpg"
-                />
+                <div className="space-y-2">
+                  {formData.image && (
+                    <img src={formData.image} alt="preview" className="w-32 h-32 object-cover rounded" />
+                  )}
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        setIsUploading(true);
+                        try {
+                          const fd = new FormData();
+                          fd.append('file', file);
+                          fd.append('folder', 'public');
+                          const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
+                          const data = await res.json();
+                          if (res.ok) {
+                            setFormData({ ...formData, image: data.url });
+                          } else {
+                            alert(data.error || 'Feltöltési hiba');
+                          }
+                        } finally {
+                          setIsUploading(false);
+                        }
+                      }}
+                      className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                    />
+                    <span className="text-sm text-gray-500">{isUploading ? 'Feltöltés...' : ''}</span>
+                  </div>
+                  <input
+                    type="url"
+                    value={formData.image}
+                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="vagy illeszd be az URL-t"
+                  />
+                </div>
               </div>
 
               <div>
