@@ -126,7 +126,7 @@ export default function BreedPage() {
           const allPuppies = await puppyResponse.json();
           
           const breedPuppies = allPuppies
-            .filter((puppy: any) => puppy.breedSlug === breedSlug)
+            .filter((puppy: any) => (puppy.breedSlug || puppy.breed_slug) === breedSlug)
             .map((puppy: any) => ({
               name: puppy.name,
               img: puppy.image,
@@ -166,7 +166,7 @@ export default function BreedPage() {
             const allPuppies = await puppyResponse.json();
             
             const breedPuppies = allPuppies
-              .filter((puppy: any) => puppy.breedSlug === breedSlug)
+              .filter((puppy: any) => (puppy.breedSlug || puppy.breed_slug) === breedSlug)
               .map((puppy: any) => ({
                 name: puppy.name,
                 img: puppy.image,

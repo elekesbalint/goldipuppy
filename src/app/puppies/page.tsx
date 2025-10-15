@@ -54,7 +54,7 @@ export default function PuppiesPage() {
           id: puppy.id,
           name: puppy.name,
           breed: puppy.breed,
-          breedSlug: puppy.breedSlug,
+          breedSlug: puppy.breedSlug || puppy.breed_slug,
           img: puppy.image,
           price: puppy.price,
           gender: puppy.gender,

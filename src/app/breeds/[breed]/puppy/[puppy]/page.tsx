@@ -41,7 +41,7 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
             id: foundPuppy.id,
             name: foundPuppy.name,
             breed: foundPuppy.breed,
-            breedSlug: foundPuppy.breedSlug,
+            breedSlug: foundPuppy.breedSlug || foundPuppy.breed_slug,
             img: foundPuppy.image,
             image: foundPuppy.image,
             price: foundPuppy.price,
