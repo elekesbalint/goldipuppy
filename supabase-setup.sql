@@ -74,3 +74,10 @@ CREATE INDEX IF NOT EXISTS idx_puppies_featured ON puppies(featured);
 
 -- Done! Tables created successfully.
 
+
+-- 7. Deposit fields (run once if not present)
+ALTER TABLE puppies
+  ADD COLUMN IF NOT EXISTS deposit_status TEXT CHECK (deposit_status IN ('none','pending','paid')) DEFAULT 'none',
+  ADD COLUMN IF NOT EXISTS deposit_due_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS deposit_reference TEXT;
+

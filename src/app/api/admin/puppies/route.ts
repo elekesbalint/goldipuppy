@@ -37,6 +37,9 @@ export async function POST(request: NextRequest) {
       description: newPuppy.description || '',
       image: newPuppy.image || '',
       featured: newPuppy.featured || false,
+      deposit_status: newPuppy.deposit_status || 'none',
+      deposit_due_at: newPuppy.deposit_due_at || null,
+      deposit_reference: newPuppy.deposit_reference || null,
     };
 
     const { data, error } = await supabase
@@ -82,6 +85,9 @@ export async function PUT(request: NextRequest) {
       description: updatedPuppy.description || '',
       image: updatedPuppy.image || '',
       featured: updatedPuppy.featured || false,
+      deposit_status: updatedPuppy.deposit_status ?? undefined,
+      deposit_due_at: updatedPuppy.deposit_due_at ?? undefined,
+      deposit_reference: updatedPuppy.deposit_reference ?? undefined,
     };
 
     const { data, error } = await supabase

@@ -67,7 +67,7 @@ function ReservePageContent() {
         // Send confirmation email to user
         await sendConfirmationEmail();
         
-        // Update puppy status to reserved in admin database
+        // Set deposit pending in admin database
         const puppyId = searchParams.get('puppyId');
         if (puppyId) {
           try {
@@ -77,13 +77,19 @@ function ReservePageContent() {
             const puppyToReserve = allPuppies.find((p: any) => p.id === puppyId);
             
             if (puppyToReserve) {
-              // Update status to reserved
+              // Generate deposit reference and set pending for 12 days
+              const depositReference = `GOLDIPUPPY-${puppyToReserve.id.slice(0, 8).toUpperCase()}`;
+              const dueAt = new Date();
+              dueAt.setDate(dueAt.getDate() + 12);
               await fetch('/api/admin/puppies', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                   ...puppyToReserve,
                   status: 'reserved',
+                  deposit_status: 'pending',
+                  deposit_due_at: dueAt.toISOString(),
+                  deposit_reference: depositReference,
                 }),
               });
               console.log('✅ Puppy status updated to reserved in admin database');
@@ -131,6 +137,11 @@ function ReservePageContent() {
         puppy_name: puppyName,
         customer_phone: formData.phone || 'Nincs megadva',
         customer_message: formData.message,
+        deposit_amount: '500 EUR',
+        deposit_iban: 'HU55 1040 4601 5052 6586 6552 1035',
+        deposit_beneficiary: 'Aranyi Attila',
+        deposit_due_days: '12',
+        deposit_reference: '',
         submitted_at: new Date().toLocaleString('hu-HU', { timeZone: 'Europe/Budapest' }),
       };
 
