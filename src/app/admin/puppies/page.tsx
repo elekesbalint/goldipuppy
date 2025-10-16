@@ -74,6 +74,15 @@ export default function AdminPuppiesPage() {
     }
   };
 
+  const getDaysRemaining = (puppy: Puppy): number | null => {
+    if (!puppy.deposit_due_at || puppy.deposit_status !== 'pending') return null;
+    const now = new Date();
+    const due = new Date(puppy.deposit_due_at);
+    const ms = due.getTime() - now.getTime();
+    const days = Math.ceil(ms / (1000 * 60 * 60 * 24));
+    return days;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -499,6 +508,20 @@ export default function AdminPuppiesPage() {
                             {puppy.status === 'available' ? 'Elérhető' :
                              puppy.status === 'reserved' ? 'Lefoglalva' : 'Eladva'}
                           </span>
+                          {puppy.deposit_status === 'pending' && (
+                            <div className="mt-1 text-xs">
+                              {(() => {
+                                const days = getDaysRemaining(puppy);
+                                if (days === null) return null;
+                                const color = days <= 3 ? 'text-red-700 bg-red-100' : days <= 7 ? 'text-orange-700 bg-orange-100' : 'text-blue-700 bg-blue-100';
+                                return (
+                                  <span className={`inline-block px-2 py-0.5 rounded ${color}`}>
+                                    Előleg hátra: {days} nap
+                                  </span>
+                                );
+                              })()}
+                            </div>
+                          )}
                         </div>
                       </div>
                       

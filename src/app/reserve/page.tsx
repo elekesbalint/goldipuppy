@@ -52,7 +52,7 @@ function ReservePageContent() {
       dueAtDate.setDate(dueAtDate.getDate() + 12);
       const dueAtIso = dueAtDate.toISOString();
       const dueAtHumanHu = dueAtDate.toLocaleDateString('hu-HU', { year: 'numeric', month: '2-digit', day: '2-digit' });
-      const depositBlock = `\n\n---\nElőleg információk:\nÖsszeg: 500 EUR\nIBAN: HU55 1040 4601 5052 6586 6552 1035\nKedvezményezett: Aranyi Attila\nHatáridő: ${dueAtHumanHu}\nKözlemény/Referencia: ${depositReference}\n---`;
+      const depositBlock = `\n\n⚠️ FONTOS: Kérjük, utald át az 500 EUR előleget legkésőbb ${dueAtHumanHu}-ig. Ennek elmaradása esetén a foglalás automatikusan törlődik.\n\n---\nElőleg információk:\nÖsszeg: 500 EUR\nIBAN: HU55 1040 4601 5052 6586 6552 1035\nKedvezményezett: Aranyi Attila\nHatáridő: ${dueAtHumanHu}\nKözlemény/Referencia: ${depositReference}\n---`;
       // Initialize EmailJS
       const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_90q83xb';
       const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_yt3rsl7';
@@ -148,7 +148,7 @@ function ReservePageContent() {
         customer_name: formData.name,
         puppy_name: puppyName,
         customer_phone: formData.phone || 'Nincs megadva',
-        customer_message: `${formData.message}\n\n---\nElőleg információk:\nÖsszeg: 500 EUR\nIBAN: HU55 1040 4601 5052 6586 6552 1035\nKedvezményezett: Aranyi Attila\nHatáridő: ${dueAtHumanHu}\nKözlemény/Referencia: ${depositReference}\n---`,
+        customer_message: `${formData.message}\n\n⚠️ FONTOS: Kérjük, utald át az 500 EUR előleget legkésőbb ${dueAtHumanHu}-ig. Ennek elmaradása esetén a foglalás automatikusan törlődik.\n\n---\nElőleg információk:\nÖsszeg: 500 EUR\nIBAN: HU55 1040 4601 5052 6586 6552 1035\nKedvezményezett: Aranyi Attila\nHatáridő: ${dueAtHumanHu}\nKözlemény/Referencia: ${depositReference}\n---`,
         deposit_amount: '500 EUR',
         deposit_iban: 'HU55 1040 4601 5052 6586 6552 1035',
         deposit_beneficiary: 'Aranyi Attila',
