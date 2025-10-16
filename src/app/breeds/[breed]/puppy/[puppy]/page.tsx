@@ -120,17 +120,47 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
 
   return (
     <div className="min-h-screen bg-[var(--background)] font-sans flex flex-col items-center py-16 px-4">
-      <div className="w-full max-w-3xl mb-10">
+      <div className="w-full max-w-4xl mb-10">
         <Link href={`/breeds/${resolvedParams.breed}`} className="text-[var(--accent)] underline mb-4 inline-block">← Back to breed</Link>
-        <div className="flex flex-col md:flex-row gap-8 items-center">
-          <div className="relative w-64 h-64 rounded-2xl overflow-hidden shadow mb-4 md:mb-0">
-            <Image src={puppy.img} alt={puppy.name} fill sizes="256px" className="object-cover" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          {/* Image card */}
+          <div className="relative rounded-3xl p-1 bg-gradient-to-br from-amber-300/60 via-orange-200/60 to-yellow-200/60 shadow-xl">
+            <div className="relative w-full h-72 md:h-[22rem] rounded-3xl overflow-hidden">
+              <Image src={puppy.img} alt={puppy.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+              {puppy.status !== 'available' && (
+                <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-bold shadow bg-orange-500 text-white">
+                  {puppy.status === 'reserved' ? 'Reserved' : 'Sold'}
+                </div>
+              )}
+            </div>
           </div>
-          <div className="flex-1">
-            <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">{puppy.name}</h1>
-            <div className="text-xl text-gray-600 mb-4">{puppy.breed} • {puppy.gender} • {puppy.age}</div>
-            <div className="text-3xl font-bold text-[var(--accent)] mb-4">€{puppy.price}</div>
-            <p className="text-gray-700 leading-relaxed">{puppy.description}</p>
+
+          {/* Info card */}
+          <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6">
+            <h1 className="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">{puppy.name}</h1>
+            <div className="flex flex-wrap gap-2 mb-4">
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">{puppy.breed}</span>
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">{puppy.gender}</span>
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">{puppy.age}</span>
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">{puppy.size}</span>
+            </div>
+            <div className="text-3xl font-black text-[var(--accent)] mb-4">€{puppy.price}</div>
+            <p className="text-gray-700 leading-relaxed mb-6">{puppy.description}</p>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href={`/reserve?puppy=${encodeURIComponent(puppy.name)}&puppyId=${puppy.id}`}
+                className="bg-gradient-to-r from-[var(--accent)] to-yellow-600 text-white font-bold rounded-full px-6 py-3 shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300"
+              >
+                Reserve {puppy.name}
+              </Link>
+              <Link
+                href={`/breeds/${resolvedParams.breed}`}
+                className="bg-white text-[var(--accent)] font-bold rounded-full px-6 py-3 shadow border-2 border-[var(--accent)] hover:scale-105 hover:shadow-lg transition-all duration-300"
+              >
+                Back to {puppy.breed}
+              </Link>
+            </div>
           </div>
         </div>
       </div>
