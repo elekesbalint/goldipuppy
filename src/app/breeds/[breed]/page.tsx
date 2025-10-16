@@ -266,7 +266,7 @@ export default function BreedPage() {
       </div>
 
       {/* Hero Section - Egyedi design az adott breed oldalhoz */}
-      <section className={`relative bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50 min-h-screen flex items-center justify-center py-20 overflow-hidden transition-all duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+      <section className={`relative bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50 min-h-screen flex items-center justify-center py-20 pb-56 md:pb-64 overflow-hidden transition-all duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
         {/* Breed-specific Pattern Background */}
         <div className="absolute inset-0 overflow-hidden opacity-5">
           <div className="absolute inset-0" style={{
@@ -387,7 +387,7 @@ export default function BreedPage() {
         </div>
 
         {/* Bottom Stats Strip */}
-        <div className={`absolute bottom-20 left-1/2 transform -translate-x-1/2 transition-all duration-1000 delay-900 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
+        <div className={`absolute bottom-10 md:bottom-20 left-1/2 transform -translate-x-1/2 transition-all duration-1000 delay-900 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}>
           <div className="bg-white/90 backdrop-blur-lg rounded-full px-8 py-4 shadow-xl border border-gray-200 flex items-center gap-8">
             <div className="text-center group hover:scale-110 transition-transform duration-300">
               <div className="text-2xl font-black text-blue-600 group-hover:animate-pulse">

@@ -168,22 +168,7 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
         </div>
       </div>
 
-      {/* Parents section */}
-      <div className="w-full max-w-5xl mb-16">
-        <h2 className="text-3xl font-bold text-[var(--foreground)] mb-8 text-center">Parents</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {puppy.parents.map((parent: any, i: number) => (
-            <div key={`parent-${parent.name}-${i}`} className="bg-white rounded-2xl shadow-lg p-6 text-center">
-              <div className="relative w-32 h-32 rounded-full overflow-hidden mx-auto mb-4">
-                <Image src={parent.img} alt={parent.name} fill sizes="128px" className="object-cover" />
-              </div>
-              <h3 className="font-bold text-[var(--foreground)] text-xl mb-2">{parent.name}</h3>
-              <div className="text-gray-600 mb-2">{parent.breed}</div>
-              <div className="text-sm text-gray-500">{parent.titles}</div>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Parents section removed by request */}
 
       {/* Shipping info */}
       <div className="w-full max-w-3xl mb-16">
