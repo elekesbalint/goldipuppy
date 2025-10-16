@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 
 // No more static puppy data - using admin API only
@@ -122,7 +123,9 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
       <div className="w-full max-w-3xl mb-10">
         <Link href={`/breeds/${resolvedParams.breed}`} className="text-[var(--accent)] underline mb-4 inline-block">← Back to breed</Link>
         <div className="flex flex-col md:flex-row gap-8 items-center">
-          <img src={puppy.img} alt={puppy.name} className="w-64 h-64 object-cover rounded-2xl shadow mb-4 md:mb-0" />
+          <div className="relative w-64 h-64 rounded-2xl overflow-hidden shadow mb-4 md:mb-0">
+            <Image src={puppy.img} alt={puppy.name} fill sizes="256px" className="object-cover" />
+          </div>
           <div className="flex-1">
             <h1 className="text-4xl font-bold text-[var(--foreground)] mb-2">{puppy.name}</h1>
             <div className="text-xl text-gray-600 mb-4">{puppy.breed} • {puppy.gender} • {puppy.age}</div>
@@ -171,7 +174,9 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {puppy.parents.map((parent: any, i: number) => (
             <div key={`parent-${parent.name}-${i}`} className="bg-white rounded-2xl shadow-lg p-6 text-center">
-              <img src={parent.img} alt={parent.name} className="w-32 h-32 object-cover rounded-full mx-auto mb-4" />
+              <div className="relative w-32 h-32 rounded-full overflow-hidden mx-auto mb-4">
+                <Image src={parent.img} alt={parent.name} fill sizes="128px" className="object-cover" />
+              </div>
               <h3 className="font-bold text-[var(--foreground)] text-xl mb-2">{parent.name}</h3>
               <div className="text-gray-600 mb-2">{parent.breed}</div>
               <div className="text-sm text-gray-500">{parent.titles}</div>

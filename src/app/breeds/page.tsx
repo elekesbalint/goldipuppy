@@ -152,10 +152,12 @@ export default function BreedsPage() {
                 animationDelay: `${index * 0.2}s`
               }}
             >
-              <img 
+              <Image 
                 src={breed.img} 
                 alt={breed.name} 
-                className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-700"
+                fill
+                sizes="200px"
+                className="object-cover group-hover:scale-125 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-black/50 group-hover:from-white/10 group-hover:to-black/30 transition-all duration-500"></div>
               <div className="absolute inset-0 flex items-center justify-center">
@@ -194,11 +196,13 @@ export default function BreedsPage() {
           <div className={`grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 transition-all duration-1000 delay-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             {cmsBreeds.slice(0, 3).map((breed, index) => (
               <div key={`preview-${breed.slug}-${index}`} className="bg-white/10 backdrop-blur-lg rounded-3xl p-6 hover:bg-white/20 hover:scale-105 transition-all duration-500 group border border-white/20">
-                <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden border-4 border-white/30 group-hover:border-white/60 transition-all duration-300">
-                  <img 
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden border-4 border-white/30 group-hover:border-white/60 transition-all duration-300 relative">
+                  <Image 
                     src={breed.img} 
                     alt={breed.name} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    fill
+                    sizes="80px"
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors duration-300">
@@ -307,11 +311,13 @@ export default function BreedsPage() {
                 transitionDelay: `${800 + index * 150}ms`
               }}
             >
-              <div className="relative overflow-hidden">
-                <img 
+              <div className="relative overflow-hidden h-64">
+                <Image 
                   src={breed.img} 
                   alt={breed.name} 
-                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" 
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover group-hover:scale-110 transition-transform duration-500" 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-bold shadow-lg animate-pulse ${

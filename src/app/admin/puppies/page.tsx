@@ -321,7 +321,34 @@ export default function AdminPuppiesPage() {
                 </label>
                 <div className="space-y-2">
                   {formData.image && (
-                    <img src={formData.image} alt="preview" className="w-32 h-32 object-cover rounded" />
+                    <div className="flex items-center gap-3">
+                      <img src={formData.image} alt="preview" className="w-32 h-32 object-cover rounded" />
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          if (!formData.image) return;
+                          if (!confirm('Biztosan törlöd a képet a tárhelyről is?')) return;
+                          try {
+                            const res = await fetch('/api/admin/upload', {
+                              method: 'DELETE',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ url: formData.image }),
+                            });
+                            if (!res.ok) {
+                              const data = await res.json().catch(() => ({} as any));
+                              alert(data.error || 'Törlési hiba');
+                              return;
+                            }
+                            setFormData({ ...formData, image: '' });
+                          } catch (e) {
+                            alert('Törlési hiba');
+                          }
+                        }}
+                        className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-medium"
+                      >
+                        Kép törlése
+                      </button>
+                    </div>
                   )}
                   <div className="flex items-center gap-3">
                     <input
@@ -349,6 +376,20 @@ export default function AdminPuppiesPage() {
                       className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
                     />
                     <span className="text-sm text-gray-500">{isUploading ? 'Feltöltés...' : ''}</span>
+                    {formData.image && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // Replace: simply trigger file picker by clicking the input
+                          // Users can pick a new file; previous image can be left as-is or deleted first.
+                          // We programmatically focus the input for better UX.
+                          (document.activeElement as HTMLElement)?.blur();
+                        }}
+                        className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-medium"
+                      >
+                        Kép cseréje
+                      </button>
+                    )}
                   </div>
                   <input
                     type="url"

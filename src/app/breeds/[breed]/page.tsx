@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 
 const breedData: Record<string, any> = {
@@ -341,11 +342,15 @@ export default function BreedPage() {
             <div className="relative mb-8 group">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500"></div>
               <div className="relative bg-white rounded-3xl p-4 shadow-2xl group-hover:shadow-3xl transition-all duration-500 hover:scale-105">
-                <img
-                  src={breed.img}
-                  alt={breed.name}
-                  className="w-full h-80 object-cover rounded-2xl group-hover:scale-110 transition-transform duration-700"
-                />
+                <div className="relative w-full h-80 rounded-2xl overflow-hidden">
+                  <Image
+                    src={breed.img}
+                    alt={breed.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                </div>
                 <div className="absolute top-8 right-8 bg-white/90 backdrop-blur-lg rounded-full p-3 shadow-lg">
                   <div className="text-2xl animate-pulse">
                     {breed.popularity === 'High' ? '🔥' : breed.popularity === 'Medium' ? '⭐' : '💎'}
@@ -477,11 +482,13 @@ export default function BreedPage() {
                 transitionDelay: `${1200 + i * 150}ms`
               }}
             >
-              <div className="relative overflow-hidden">
-                <img 
+              <div className="relative overflow-hidden h-48">
+                <Image 
                   src={puppy.img} 
                   alt={puppy.name} 
-                  className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500" 
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  className="object-cover group-hover:scale-110 transition-transform duration-500" 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="absolute top-4 right-4 bg-gradient-to-r from-[var(--accent)] to-yellow-600 text-white rounded-full px-3 py-1 font-bold shadow animate-pulse">

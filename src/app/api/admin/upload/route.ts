@@ -47,3 +47,53 @@ export async function POST(request: Request) {
 }
 
 
+// Delete image from Supabase Storage by path or public URL
+export async function DELETE(request: Request) {
+  try {
+    const body = await request.json().catch(() => ({} as any));
+    const { path, url } = body as { path?: string; url?: string };
+
+    if (!path && !url) {
+      return NextResponse.json({ error: 'Provide path or url to delete' }, { status: 400 });
+    }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+
+    if (!supabaseUrl || !serviceKey) {
+      return NextResponse.json({ error: 'Supabase env vars missing' }, { status: 500 });
+    }
+
+    const supabase = createClient(supabaseUrl, serviceKey);
+
+    // Infer storage path if only public URL provided
+    let storagePath = path || '';
+    if (!storagePath && url) {
+      // Expected public URL format:
+      // {SUPABASE_URL}/storage/v1/object/public/puppy-images/<path>
+      const marker = '/storage/v1/object/public/puppy-images/';
+      const idx = url.indexOf(marker);
+      if (idx !== -1) {
+        storagePath = url.substring(idx + marker.length);
+      }
+    }
+
+    if (!storagePath) {
+      return NextResponse.json({ error: 'Could not resolve storage path' }, { status: 400 });
+    }
+
+    const { error: removeError } = await supabase.storage
+      .from('puppy-images')
+      .remove([storagePath]);
+
+    if (removeError) {
+      return NextResponse.json({ error: removeError.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err: any) {
+    return NextResponse.json({ error: err?.message || 'Delete failed' }, { status: 500 });
+  }
+}
+
+

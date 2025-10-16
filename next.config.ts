@@ -9,6 +9,18 @@ const nextConfig: NextConfig = {
     // Allow production builds to complete even if there are type errors
     ignoreBuildErrors: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'btjvjemmqwhtoyiifkcn.supabase.co',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

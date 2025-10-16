@@ -1,6 +1,7 @@
 "use client";
 import { useState, ChangeEvent, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 // No more fallback data - using admin API only
 
@@ -168,52 +169,64 @@ export default function PuppiesPage() {
         <div className="absolute inset-0 z-0">
           <div className="grid grid-cols-3 grid-rows-2 h-full gap-1">
             <div className="relative overflow-hidden group">
-              <img 
+              <Image 
                 src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=600&q=80" 
                 alt="Happy puppy 1" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent)]/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[var(--accent)]/40 to-transparent z-10"></div>
             </div>
             <div className="relative overflow-hidden group">
-              <img 
+              <Image 
                 src="https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=600&q=80" 
                 alt="Happy puppy 2" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/40 to-transparent z-10"></div>
             </div>
             <div className="relative overflow-hidden group">
-              <img 
+              <Image 
                 src="https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80" 
                 alt="Happy puppy 3" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/40 to-transparent z-10"></div>
             </div>
             <div className="relative overflow-hidden group">
-              <img 
+              <Image 
                 src="https://images.unsplash.com/photo-1518715308788-3005759c61d3?auto=format&fit=crop&w=600&q=80" 
                 alt="Happy puppy 4" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/40 to-transparent z-10"></div>
             </div>
             <div className="relative overflow-hidden group">
-              <img 
+              <Image 
                 src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=600&q=80" 
                 alt="Happy puppy 5" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/40 to-transparent z-10"></div>
             </div>
             <div className="relative overflow-hidden group">
-              <img 
+              <Image 
                 src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=600&q=80" 
                 alt="Happy puppy 6" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/40 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-500/40 to-transparent z-10"></div>
             </div>
           </div>
           <div className="absolute inset-0 bg-black/50 z-5"></div>
@@ -536,13 +549,13 @@ export default function PuppiesPage() {
                   transitionDelay: `${index * 100}ms`
                 }}
               >
-                <div className={`relative overflow-hidden ${viewMode === "list" ? "sm:w-64 flex-shrink-0" : ""}`}>
-                  <img 
+                <div className={`relative overflow-hidden ${viewMode === "list" ? "sm:w-64 flex-shrink-0 h-48 sm:h-full" : "h-64"}`}>
+                  <Image 
                     src={puppy.img} 
                     alt={puppy.name} 
-                    className={`object-cover group-hover:scale-110 transition-transform duration-500 ${
-                      viewMode === "list" ? "w-full h-48 sm:h-full" : "w-full h-64"
-                    }`} 
+                    fill
+                    sizes={viewMode === "list" ? "(max-width: 640px) 100vw, 256px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"}
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   {puppy.featured && (
