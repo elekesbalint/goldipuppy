@@ -43,6 +43,16 @@ function ReservePageContent() {
     setIsSubmitting(true);
     
     try {
+      // Prepare deposit reference and due date (12 days)
+      const puppyIdParam = searchParams.get('puppyId') || '';
+      const depositReference = puppyIdParam
+        ? `GOLDIPUPPY-${puppyIdParam.slice(0, 8).toUpperCase()}`
+        : `GOLDIPUPPY-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
+      const dueAtDate = new Date();
+      dueAtDate.setDate(dueAtDate.getDate() + 12);
+      const dueAtIso = dueAtDate.toISOString();
+      const dueAtHumanHu = dueAtDate.toLocaleDateString('hu-HU', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      const depositBlock = `\n\n---\nElőleg információk:\nÖsszeg: 500 EUR\nIBAN: HU55 1040 4601 5052 6586 6552 1035\nKedvezményezett: Aranyi Attila\nHatáridő: ${dueAtHumanHu}\nKözlemény/Referencia: ${depositReference}\n---`;
       // Initialize EmailJS
       const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_90q83xb';
       const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_yt3rsl7';
@@ -55,17 +65,23 @@ function ReservePageContent() {
         phone: formData.phone || 'Not provided',
         subject: `🐕 GoldiPuppy - Puppy Reservation Request for ${puppyName}`,
         inquiry_type: `Puppy Reservation - ${puppyName}`,
-        message: formData.message,
+        message: `${formData.message}${depositBlock}`,
         to_email: 'goldipuppy01@gmail.com',
         submitted_at: new Date().toLocaleString('hu-HU', { timeZone: 'Europe/Budapest' }),
+        deposit_amount: '500 EUR',
+        deposit_iban: 'HU55 1040 4601 5052 6586 6552 1035',
+        deposit_beneficiary: 'Aranyi Attila',
+        deposit_due_days: '12',
+        deposit_due_date: dueAtHumanHu,
+        deposit_reference: depositReference,
       };
 
       // Send email notification
       const result = await emailjs.send(serviceId, templateId, templateParams, publicKey);
       
       if (result.status === 200) {
-        // Send confirmation email to user
-        await sendConfirmationEmail();
+        // Send confirmation email to user (with deposit info)
+        await sendConfirmationEmail({ depositReference, dueAtHumanHu });
         
         // Set deposit pending in admin database
         const puppyId = searchParams.get('puppyId');
@@ -77,10 +93,6 @@ function ReservePageContent() {
             const puppyToReserve = allPuppies.find((p: any) => p.id === puppyId);
             
             if (puppyToReserve) {
-              // Generate deposit reference and set pending for 12 days
-              const depositReference = `GOLDIPUPPY-${puppyToReserve.id.slice(0, 8).toUpperCase()}`;
-              const dueAt = new Date();
-              dueAt.setDate(dueAt.getDate() + 12);
               await fetch('/api/admin/puppies', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -88,7 +100,7 @@ function ReservePageContent() {
                   ...puppyToReserve,
                   status: 'reserved',
                   deposit_status: 'pending',
-                  deposit_due_at: dueAt.toISOString(),
+                  deposit_due_at: dueAtIso,
                   deposit_reference: depositReference,
                 }),
               });
@@ -126,7 +138,7 @@ function ReservePageContent() {
     }
   };
 
-  const sendConfirmationEmail = async () => {
+  const sendConfirmationEmail = async ({ depositReference, dueAtHumanHu }: { depositReference: string; dueAtHumanHu: string }) => {
     try {
       // Send confirmation email to the user using EmailJS
       console.log('🔄 Attempting to send confirmation email to user:', formData.email);
@@ -136,12 +148,13 @@ function ReservePageContent() {
         customer_name: formData.name,
         puppy_name: puppyName,
         customer_phone: formData.phone || 'Nincs megadva',
-        customer_message: formData.message,
+        customer_message: `${formData.message}\n\n---\nElőleg információk:\nÖsszeg: 500 EUR\nIBAN: HU55 1040 4601 5052 6586 6552 1035\nKedvezményezett: Aranyi Attila\nHatáridő: ${dueAtHumanHu}\nKözlemény/Referencia: ${depositReference}\n---`,
         deposit_amount: '500 EUR',
         deposit_iban: 'HU55 1040 4601 5052 6586 6552 1035',
         deposit_beneficiary: 'Aranyi Attila',
         deposit_due_days: '12',
-        deposit_reference: '',
+        deposit_due_date: dueAtHumanHu,
+        deposit_reference: depositReference,
         submitted_at: new Date().toLocaleString('hu-HU', { timeZone: 'Europe/Budapest' }),
       };
 
