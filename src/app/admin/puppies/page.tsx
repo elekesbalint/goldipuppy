@@ -17,6 +17,9 @@ interface Puppy {
   description: string;
   image: string;
   featured: boolean;
+  deposit_status?: 'none' | 'pending' | 'paid';
+  deposit_due_at?: string | null;
+  deposit_reference?: string | null;
 }
 
 export default function AdminPuppiesPage() {
@@ -517,6 +520,38 @@ export default function AdminPuppiesPage() {
                         >
                           Szerkesztés
                         </button>
+                        {puppy.deposit_status === 'pending' && (
+                          <>
+                            <button
+                              onClick={async () => {
+                                if (!confirm('Megjelölöd előleg beérkezettként?')) return;
+                                await fetch('/api/admin/puppies', {
+                                  method: 'PUT',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ ...puppy, status: 'reserved', deposit_status: 'paid' }),
+                                });
+                                await loadPuppies();
+                              }}
+                              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm font-medium"
+                            >
+                              Előleg beérkezett
+                            </button>
+                            <button
+                              onClick={async () => {
+                                if (!confirm('Lejártnak/lemondottnak jelölöd? Visszaáll available-re.')) return;
+                                await fetch('/api/admin/puppies', {
+                                  method: 'PUT',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ ...puppy, status: 'available', deposit_status: 'none', deposit_due_at: null, deposit_reference: null }),
+                                });
+                                await loadPuppies();
+                              }}
+                              className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm font-medium"
+                            >
+                              Előleg lejárt/lemondva
+                            </button>
+                          </>
+                        )}
                         <button
                           onClick={() => handleDelete(puppy.id)}
                           className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm font-medium"
