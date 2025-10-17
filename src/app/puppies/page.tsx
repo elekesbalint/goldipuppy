@@ -32,6 +32,7 @@ export default function PuppiesPage() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [visibleCards, setVisibleCards] = useState<string[]>([]);
   const [cmsPuppies, setCmsPuppies] = useState<any[]>([]);
+  const [breeds, setBreeds] = useState<any[]>([]);
   const [mounted, setMounted] = useState(false);
   const numberFormatter = new Intl.NumberFormat('en-US');
   const filtersSectionRef = useRef<HTMLDivElement | null>(null);
@@ -46,7 +47,7 @@ export default function PuppiesPage() {
   useEffect(() => {
     async function loadFromCms() {
       try {
-        // Load from our new JSON-based API
+        // Load puppies from API
         const res = await fetch('/api/admin/puppies');
         const puppiesData = await res.json();
         
@@ -77,8 +78,22 @@ export default function PuppiesPage() {
         setCmsPuppies([]);
       }
     }
+
+    async function loadBreeds() {
+      try {
+        // Load breeds from API
+        const res = await fetch('/api/admin/breeds');
+        const breedsData = await res.json();
+        console.log('Loaded breeds:', breedsData);
+        setBreeds(breedsData);
+      } catch (error) {
+        console.error('Error loading breeds:', error);
+        setBreeds([]);
+      }
+    }
     
     loadFromCms();
+    loadBreeds();
   }, []);
 
 
@@ -368,12 +383,11 @@ export default function PuppiesPage() {
                 className="w-full rounded-xl border-2 border-gray-200 px-3 sm:px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-4 focus:ring-[var(--accent)]/30 focus:border-[var(--accent)] transition-all hover:shadow-lg hover:border-[var(--accent)]/50 touch-manipulation"
               >
                 <option value="">All Breeds</option>
-                <option value="Golden Retriever">Golden Retriever</option>
-                <option value="French Bulldog">French Bulldog</option>
-                <option value="Pomeranian">Pomeranian</option>
-                <option value="Labrador Retriever">Labrador Retriever</option>
-                <option value="Cavalier King Charles">Cavalier King Charles</option>
-                <option value="Shih Tzu">Shih Tzu</option>
+                {breeds.map((breed) => (
+                  <option key={breed.id} value={breed.name}>
+                    {breed.name}
+                  </option>
+                ))}
               </select>
             </div>
 
