@@ -95,21 +95,6 @@ export default function AdminLoginPage() {
               {isLoading ? 'Bejelentkezés...' : 'Bejelentkezés'}
             </button>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
-              Alapértelmezett hitelesítő adatok:
-            </p>
-            <p className="text-xs text-gray-400 mt-1">
-              Username: <code className="bg-gray-100 px-2 py-1 rounded">admin</code>
-            </p>
-            <p className="text-xs text-gray-400">
-              Password: <code className="bg-gray-100 px-2 py-1 rounded">goldipuppy2025</code>
-            </p>
-            <p className="text-xs text-red-500 mt-2">
-              ⚠️ Változtasd meg production előtt!
-            </p>
-          </div>
         </div>
 
         {/* Back to site */}
