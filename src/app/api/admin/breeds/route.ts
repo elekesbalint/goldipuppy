@@ -129,12 +129,47 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const { error } = await supabase
+    // First, get the breed to retrieve the image URL
+    const { data: breed, error: fetchError } = await supabase
+      .from('breeds')
+      .select('image')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    // Delete the breed from database
+    const { error: deleteError } = await supabase
       .from('breeds')
       .delete()
       .eq('id', id);
 
-    if (error) throw error;
+    if (deleteError) throw deleteError;
+
+    // If breed had an image stored in Supabase Storage, delete it
+    if (breed?.image && breed.image.includes('supabase.co/storage')) {
+      try {
+        const url = new URL(breed.image);
+        const pathParts = url.pathname.split('/');
+        const bucketIndex = pathParts.indexOf('puppy-images');
+        
+        if (bucketIndex !== -1) {
+          const filePath = pathParts.slice(bucketIndex + 1).join('/');
+          
+          const { error: storageError } = await supabase.storage
+            .from('puppy-images')
+            .remove([filePath]);
+          
+          if (storageError) {
+            console.error('Error deleting image from storage:', storageError);
+            // Don't fail the whole operation if image deletion fails
+          }
+        }
+      } catch (imgError) {
+        console.error('Error processing image deletion:', imgError);
+        // Don't fail the whole operation if image deletion fails
+      }
+    }
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
