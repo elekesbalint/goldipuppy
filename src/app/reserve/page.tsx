@@ -18,6 +18,14 @@ function ReservePageContent() {
   const [submitted, setSubmitted] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewData, setReviewData] = useState({
+    rating: 5,
+    reviewText: '',
+    reviewerName: '',
+  });
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -199,11 +207,49 @@ function ReservePageContent() {
     });
   };
 
+  const handleReviewSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setReviewSubmitting(true);
+
+    try {
+      const puppyId = searchParams.get('puppyId'); // Keep as string UUID
+      
+      const reviewPayload = {
+        puppy_id: puppyId || null, // Send UUID string or null
+        puppy_name: puppyName,
+        customer_name: reviewData.reviewerName || 'Anonymous',
+        customer_email: formData.email,
+        rating: reviewData.rating,
+        review_text: reviewData.reviewText,
+      };
+
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(reviewPayload),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setReviewSubmitted(true);
+        setReviewData({ rating: 5, reviewText: '', reviewerName: '' });
+      } else {
+        throw new Error(result.error || 'Failed to submit review');
+      }
+    } catch (error) {
+      console.error('Review submission failed:', error);
+      alert('There was a problem submitting your review. Please try again.');
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
+
   if (submitted) {
     return (
-      <div className="min-h-screen font-sans flex flex-col items-center justify-center overflow-x-hidden">
+      <div className="min-h-screen font-sans flex flex-col items-center justify-center overflow-x-hidden py-12 px-4">
         {/* Success Animation */}
-        <div className="text-center max-w-2xl mx-auto px-4">
+        <div className="text-center max-w-2xl mx-auto">
           <div className="relative mb-8">
             <div className="text-9xl animate-bounce mb-4">🐕</div>
             <div className="absolute inset-0 animate-ping">
@@ -235,6 +281,121 @@ function ReservePageContent() {
               </div>
             </div>
           </div>
+
+          {/* Review Section */}
+          {!reviewSubmitted && !showReviewForm && (
+            <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-3xl p-8 shadow-xl border-2 border-yellow-200 mb-8">
+              <div className="text-5xl mb-4">⭐</div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-3">Share Your Experience!</h2>
+              <p className="text-gray-600 mb-6">
+                Help other families by sharing your thoughts about {puppyName} and our service.
+              </p>
+              <button
+                onClick={() => setShowReviewForm(true)}
+                className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-full px-8 py-3 shadow-lg hover:scale-105 hover:shadow-xl transition-all duration-300 flex items-center gap-2 mx-auto"
+              >
+                <span>✍️</span>
+                <span>Write a Review</span>
+              </button>
+            </div>
+          )}
+
+          {/* Review Form */}
+          {showReviewForm && !reviewSubmitted && (
+            <div className="bg-white/90 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-gray-200 mb-8">
+              <h2 className="text-3xl font-bold text-gray-800 mb-6">Write Your Review</h2>
+              <form onSubmit={handleReviewSubmit} className="space-y-6">
+                {/* Rating */}
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-3">
+                    ⭐ Your Rating
+                  </label>
+                  <div className="flex gap-2 justify-center">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewData({ ...reviewData, rating: star })}
+                        className="text-5xl transition-all hover:scale-110"
+                      >
+                        {star <= reviewData.rating ? '⭐' : '☆'}
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-center text-gray-600 mt-2">
+                    {reviewData.rating === 5 && '🌟 Excellent!'}
+                    {reviewData.rating === 4 && '😊 Great!'}
+                    {reviewData.rating === 3 && '👍 Good'}
+                    {reviewData.rating === 2 && '😐 Fair'}
+                    {reviewData.rating === 1 && '😞 Poor'}
+                  </p>
+                </div>
+
+                {/* Name (Optional) */}
+                <div>
+                  <label htmlFor="reviewerName" className="block text-sm font-bold text-gray-700 mb-2">
+                    👤 Your Name (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    id="reviewerName"
+                    value={reviewData.reviewerName}
+                    onChange={(e) => setReviewData({ ...reviewData, reviewerName: e.target.value })}
+                    className="w-full rounded-2xl border-2 border-gray-200 px-6 py-3 focus:outline-none focus:ring-4 focus:ring-yellow-200 focus:border-yellow-400 transition-all text-gray-800"
+                    placeholder="Leave blank for 'Anonymous'"
+                  />
+                </div>
+
+                {/* Review Text */}
+                <div>
+                  <label htmlFor="reviewText" className="block text-sm font-bold text-gray-700 mb-2">
+                    💬 Your Review *
+                  </label>
+                  <textarea
+                    id="reviewText"
+                    value={reviewData.reviewText}
+                    onChange={(e) => setReviewData({ ...reviewData, reviewText: e.target.value })}
+                    required
+                    rows={6}
+                    className="w-full rounded-2xl border-2 border-gray-200 px-6 py-4 focus:outline-none focus:ring-4 focus:ring-yellow-200 focus:border-yellow-400 transition-all resize-none text-gray-800"
+                    placeholder={`Share your experience with ${puppyName} and our service...`}
+                  ></textarea>
+                </div>
+
+                <div className="bg-blue-50 rounded-2xl p-4 text-sm text-gray-600">
+                  <p>ℹ️ Your review will be visible after admin approval to ensure quality.</p>
+                </div>
+
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowReviewForm(false)}
+                    className="flex-1 bg-gray-200 text-gray-700 font-bold py-3 rounded-2xl hover:scale-105 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={reviewSubmitting || !reviewData.reviewText}
+                    className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-3 rounded-2xl hover:scale-105 hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {reviewSubmitting ? 'Submitting...' : 'Submit Review'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Review Submitted */}
+          {reviewSubmitted && (
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-8 shadow-xl border-2 border-green-200 mb-8">
+              <div className="text-6xl mb-4">✅</div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-3">Review Submitted!</h2>
+              <p className="text-gray-600">
+                Thank you for your feedback! Your review will appear on our website after admin approval.
+              </p>
+            </div>
+          )}
           
           <div className="flex flex-wrap gap-4 justify-center">
             <Link 
