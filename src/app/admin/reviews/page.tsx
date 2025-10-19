@@ -45,23 +45,19 @@ export default function AdminReviewsPage() {
 
     setProcessingId(reviewId);
     try {
-      const token = localStorage.getItem('adminToken');
       const response = await fetch(`/api/admin/reviews?id=${reviewId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
       });
 
       if (response.ok) {
         await loadReviews();
-        alert('Review deleted successfully!');
+        alert('Vélemény sikeresen törölve!');
       } else {
-        alert('Failed to delete review');
+        alert('Hiba történt a törlés során');
       }
     } catch (error) {
       console.error('Error deleting review:', error);
-      alert('Error deleting review');
+      alert('Hiba történt a törlés során');
     } finally {
       setProcessingId(null);
     }

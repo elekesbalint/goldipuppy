@@ -1,20 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-// Check authentication
-function isAuthenticated(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization');
-  return authHeader === `Bearer ${process.env.ADMIN_TOKEN || 'goldipuppy-admin-2025'}`;
-}
+import { supabase } from '@/lib/supabase';
 
 export async function DELETE(request: NextRequest) {
-  if (!isAuthenticated(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
@@ -25,8 +12,6 @@ export async function DELETE(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const { error } = await supabase
       .from('reviews')
