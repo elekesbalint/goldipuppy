@@ -365,7 +365,7 @@ function ReservePageContent() {
                 </div>
 
                 <div className="bg-blue-50 rounded-2xl p-4 text-sm text-gray-600">
-                  <p>ℹ️ Your review will be visible after admin approval to ensure quality.</p>
+                  <p>ℹ️ Your review will be visible immediately on our reviews page.</p>
                 </div>
 
                 <div className="flex gap-4">
@@ -393,9 +393,15 @@ function ReservePageContent() {
             <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-8 shadow-xl border-2 border-green-200 mb-8">
               <div className="text-6xl mb-4">✅</div>
               <h2 className="text-2xl font-bold text-gray-800 mb-3">Review Submitted!</h2>
-              <p className="text-gray-600">
-                Thank you for your feedback! Your review will appear on our website after admin approval.
+              <p className="text-gray-600 mb-4">
+                Thank you for your feedback! Your review is now visible on our reviews page.
               </p>
+              <a 
+                href="/reviews" 
+                className="inline-block bg-purple-600 text-white font-bold px-6 py-3 rounded-full hover:bg-purple-700 transition"
+              >
+                View All Reviews →
+              </a>
             </div>
           )}
           

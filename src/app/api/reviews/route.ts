@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
       customer_email: customer_email || null,
       rating,
       review_text,
-      is_approved: false, // Always start as unapproved
+      is_approved: true, // Auto-approve all reviews
     };
 
     console.log('💾 [POST /api/reviews] Inserting review data:', reviewData);
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Review submitted successfully! It will be visible after admin approval.',
+      message: 'Review submitted successfully! It is now visible on the reviews page.',
       review: data,
     });
   } catch (err: any) {
