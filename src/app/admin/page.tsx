@@ -78,7 +78,7 @@ export default function AdminPage() {
               <h2 className="text-2xl font-bold text-gray-900">Vélemények</h2>
             </div>
             <p className="text-gray-600">
-              Felhasználói vélemények szerkesztése és törlése
+              Felhasználói vélemények megtekintése és törlése
             </p>
           </Link>
         </div>
