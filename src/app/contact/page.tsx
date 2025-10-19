@@ -374,9 +374,9 @@ function ContactPageContent() {
                   <div className="bg-purple-50 rounded-2xl p-6">
                     <div className="text-2xl mb-3">🏢</div>
                     <h3 className="font-bold text-gray-800 mb-2">Main Office</h3>
-                    <p className="text-gray-600 text-sm mb-2">Mon-Fri 9AM-6PM EST</p>
-                    <a href="tel:+1234567890" className="text-purple-600 font-bold text-xl hover:underline">
-                      +1 (234) 567-890
+                    <p className="text-gray-600 text-sm mb-2">Mon-Fri 9AM-6PM CET</p>
+                    <a href="tel:+36305433199" className="text-purple-600 font-bold text-xl hover:underline">
+                      +36 30 543 3199
                     </a>
                   </div>
                   
@@ -384,18 +384,21 @@ function ContactPageContent() {
                     <div className="text-2xl mb-3">🚨</div>
                     <h3 className="font-bold text-gray-800 mb-2">Emergency Line</h3>
                     <p className="text-gray-600 text-sm mb-2">24/7 Puppy Emergency Support</p>
-                    <a href="tel:+1234567999" className="text-red-600 font-bold text-xl hover:underline">
-                      +1 (234) 567-999
+                    <a href="tel:+36305433199" className="text-red-600 font-bold text-xl hover:underline">
+                      +36 30 543 3199
                     </a>
                   </div>
                 </div>
                 
 
                 
-                <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-xl py-4 rounded-2xl hover:scale-105 hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3 group">
+                <a 
+                  href="tel:+36305433199"
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-xl py-4 rounded-2xl hover:scale-105 hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3 group"
+                >
                   <span className="group-hover:animate-bounce">📱</span>
                   Call Us Now
-                </button>
+                </a>
               </div>
             )}
 

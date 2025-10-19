@@ -10,8 +10,12 @@ export default function Header() {
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         {/* Logo Section */}
         <div className="flex items-center space-x-2 sm:space-x-3">
-          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[var(--accent)] to-yellow-600 rounded-full flex items-center justify-center shadow-lg">
-            <span className="text-white text-xl sm:text-2xl font-bold">🐕</span>
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
+            <img 
+              src="/logo.png" 
+              alt="GoldiPuppy Logo" 
+              className="w-full h-full object-contain"
+            />
           </div>
           <Link href="/" className="text-2xl sm:text-3xl font-extrabold text-[var(--foreground)] tracking-tight hover:text-[var(--accent)] transition-all duration-300 hover:scale-105">
             GoldiPuppy

@@ -110,8 +110,8 @@ export default function RootLayout({
                   </div>
                   <div className="flex items-center space-x-3">
                     <span className="text-[var(--accent)] text-base sm:text-lg">📞</span>
-                    <a href="tel:+1234567890" className="text-gray-300 hover:text-[var(--accent)] transition text-sm sm:text-base">
-                      +1 (234) 567-8900
+                    <a href="tel:+36305433199" className="text-gray-300 hover:text-[var(--accent)] transition text-sm sm:text-base">
+                      +36 30 543 3199
                     </a>
                   </div>
                   <div className="flex items-center space-x-3">
