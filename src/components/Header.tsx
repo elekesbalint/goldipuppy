@@ -12,7 +12,7 @@ export default function Header() {
         <div className="flex items-center space-x-2 sm:space-x-3">
           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
             <img 
-              src="/logo.png" 
+              src="https://btjvjemmqwhtoyiifkcn.supabase.co/storage/v1/object/public/puppy-images/public/logo.png" 
               alt="GoldiPuppy Logo" 
               className="w-full h-full object-contain"
             />
