@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import AdminProtectedRoute from '@/components/AdminProtectedRoute';
 
 interface Review {
   id: number;
@@ -28,21 +29,29 @@ export default function AdminReviewsPage() {
 
   const loadReviews = async () => {
     try {
+      console.log('🔄 Loading reviews from admin API...');
       const token = localStorage.getItem('adminToken');
+      console.log('🔑 Admin token:', token ? 'Found' : 'Not found');
+      
       const response = await fetch('/api/admin/reviews', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
       });
 
+      console.log('📡 Response status:', response.status);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ Reviews loaded:', data.length, 'reviews');
+        console.log('📋 Reviews data:', data);
         setReviews(data);
       } else {
-        console.error('Failed to load reviews');
+        const errorText = await response.text();
+        console.error('❌ Failed to load reviews:', response.status, errorText);
       }
     } catch (error) {
-      console.error('Error loading reviews:', error);
+      console.error('❌ Error loading reviews:', error);
     } finally {
       setLoading(false);
     }
@@ -168,17 +177,20 @@ export default function AdminReviewsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl animate-spin mb-4">⭐</div>
-          <p className="text-xl text-gray-600">Loading reviews...</p>
+      <AdminProtectedRoute>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-6xl animate-spin mb-4">⭐</div>
+            <p className="text-xl text-gray-600">Loading reviews...</p>
+          </div>
         </div>
-      </div>
+      </AdminProtectedRoute>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <AdminProtectedRoute>
+      <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -340,6 +352,7 @@ export default function AdminReviewsPage() {
         )}
       </div>
     </div>
+    </AdminProtectedRoute>
   );
 }
 
