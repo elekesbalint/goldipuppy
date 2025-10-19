@@ -36,7 +36,7 @@ export default function AdminPage() {
         </div>
 
         {/* Navigation Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <Link
             href="/admin/puppies"
             className="block p-8 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border-2 border-transparent hover:border-orange-500"
@@ -64,6 +64,21 @@ export default function AdminPage() {
             </div>
             <p className="text-gray-600">
               Kutyafajták kezelése és leírásuk szerkesztése
+            </p>
+          </Link>
+
+          <Link
+            href="/admin/reviews"
+            className="block p-8 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border-2 border-transparent hover:border-purple-500"
+          >
+            <div className="flex items-center mb-4">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                <span className="text-2xl">⭐</span>
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900">Vélemények</h2>
+            </div>
+            <p className="text-gray-600">
+              Felhasználói vélemények szerkesztése és törlése
             </p>
           </Link>
         </div>
