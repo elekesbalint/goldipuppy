@@ -30,6 +30,8 @@ export default function ReviewsPage() {
     try {
       const response = await fetch('/api/reviews');
       const data = await response.json();
+      console.log('📊 Reviews loaded:', data);
+      console.log('📊 First review rating:', data[0]?.rating);
       setReviews(data);
     } catch (error) {
       console.error('Failed to load reviews:', error);
