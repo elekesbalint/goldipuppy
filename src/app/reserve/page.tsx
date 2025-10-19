@@ -232,14 +232,16 @@ function ReservePageContent() {
       const result = await response.json();
 
       if (response.ok) {
+        console.log('✅ Review submitted successfully:', result);
         setReviewSubmitted(true);
         setReviewData({ rating: 5, reviewText: '', reviewerName: '' });
       } else {
+        console.error('❌ Review submission failed:', result);
         throw new Error(result.error || 'Failed to submit review');
       }
     } catch (error) {
-      console.error('Review submission failed:', error);
-      alert('There was a problem submitting your review. Please try again.');
+      console.error('❌ Review submission exception:', error);
+      alert(`There was a problem submitting your review: ${error instanceof Error ? error.message : 'Unknown error'}. Please check the console for details.`);
     } finally {
       setReviewSubmitting(false);
     }

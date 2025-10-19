@@ -41,7 +41,11 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('📥 [POST /api/reviews] Starting review submission...');
+    
     const body = await request.json();
+    console.log('📦 [POST /api/reviews] Request body:', body);
+    
     const {
       puppy_id,
       puppy_name,
@@ -53,6 +57,7 @@ export async function POST(request: NextRequest) {
 
     // Validation
     if (!puppy_name || !rating || !review_text) {
+      console.log('❌ [POST /api/reviews] Validation failed: missing required fields');
       return NextResponse.json(
         { error: 'Missing required fields: puppy_name, rating, review_text' },
         { status: 400 }
@@ -60,11 +65,15 @@ export async function POST(request: NextRequest) {
     }
 
     if (rating < 1 || rating > 5) {
+      console.log('❌ [POST /api/reviews] Validation failed: invalid rating');
       return NextResponse.json(
         { error: 'Rating must be between 1 and 5' },
         { status: 400 }
       );
     }
+
+    console.log('✅ [POST /api/reviews] Validation passed');
+    console.log('🔗 [POST /api/reviews] Connecting to Supabase...');
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -78,6 +87,8 @@ export async function POST(request: NextRequest) {
       is_approved: false, // Always start as unapproved
     };
 
+    console.log('💾 [POST /api/reviews] Inserting review data:', reviewData);
+
     const { data, error } = await supabase
       .from('reviews')
       .insert([reviewData])
@@ -85,9 +96,11 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('[POST /api/reviews] Error:', error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error('❌ [POST /api/reviews] Supabase error:', error);
+      return NextResponse.json({ error: error.message, details: error }, { status: 500 });
     }
+
+    console.log('✅ [POST /api/reviews] Review inserted successfully:', data);
 
     return NextResponse.json({
       success: true,
@@ -95,8 +108,8 @@ export async function POST(request: NextRequest) {
       review: data,
     });
   } catch (err: any) {
-    console.error('[POST /api/reviews] Exception:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error('❌ [POST /api/reviews] Exception:', err);
+    return NextResponse.json({ error: err.message, stack: err.stack }, { status: 500 });
   }
 }
 
