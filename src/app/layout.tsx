@@ -156,7 +156,6 @@ export default function RootLayout({
                   <a href="#" className="text-gray-300 hover:text-[var(--accent)] transition">Privacy Policy</a>
                   <a href="#" className="text-gray-300 hover:text-[var(--accent)] transition">Terms of Service</a>
                   <a href="#" className="text-gray-300 hover:text-[var(--accent)] transition">Cookie Policy</a>
-                  <a href="#" className="text-gray-300 hover:text-[var(--accent)] transition">Refund Policy</a>
                   <a href="#" className="text-gray-300 hover:text-[var(--accent)] transition">Sitemap</a>
                 </div>
                 <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
@@ -166,6 +165,8 @@ export default function RootLayout({
                   </div>
                   <div className="text-gray-300 text-xs sm:text-sm text-center">
                     © 2025 GoldiPuppy. All rights reserved.
+                    <span className="mx-2">•</span>
+                    Designed & coded by <a href="https://balintelekes.hu" target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] hover:text-yellow-400 transition font-semibold">Bálint Elekes</a>
                   </div>
                 </div>
               </div>
