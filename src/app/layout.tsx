@@ -103,9 +103,7 @@ export default function RootLayout({
                   <div className="flex items-start space-x-3">
                     <span className="text-[var(--accent)] text-base sm:text-lg">📍</span>
                     <div className="text-gray-300 text-sm sm:text-base">
-                      <p>1234 Puppy Lane</p>
-                      <p>Pet City, PC 12345</p>
-                      <p>United States</p>
+                      <p>Hungary</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
@@ -116,8 +114,8 @@ export default function RootLayout({
                   </div>
                   <div className="flex items-center space-x-3">
                     <span className="text-[var(--accent)] text-base sm:text-lg">✉️</span>
-                    <a href="mailto:info@goldipuppy.com" className="text-gray-300 hover:text-[var(--accent)] transition text-sm sm:text-base break-all">
-                      info@goldipuppy.com
+                    <a href="mailto:goldipuppy01@gmail.com" className="text-gray-300 hover:text-[var(--accent)] transition text-sm sm:text-base break-all">
+                      goldipuppy01@gmail.com
                     </a>
                   </div>
                   <div className="flex items-start space-x-3">
