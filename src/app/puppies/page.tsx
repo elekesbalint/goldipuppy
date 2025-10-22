@@ -215,7 +215,7 @@ export default function PuppiesPage() {
             </div>
             <div className="relative overflow-hidden group">
               <Image 
-                src="https://images.unsplash.com/photo-1518715308788-3005759c61d3?auto=format&fit=crop&w=600&q=80" 
+                src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=600&q=80" 
                 alt="Happy puppy 4" 
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
