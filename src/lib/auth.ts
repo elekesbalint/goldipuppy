@@ -2,7 +2,7 @@
 // In production, you should use a proper auth service like NextAuth.js
 
 const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'goldipuppy2025'; // Change this!
+const ADMIN_PASSWORD = 'Senator69'; // Updated password
 
 export function validateCredentials(username: string, password: string): boolean {
   return username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
