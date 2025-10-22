@@ -164,7 +164,7 @@ export default function RootLayout({
                   <div className="text-gray-300 text-xs sm:text-sm text-center">
                     © 2025 GoldiPuppy. All rights reserved.
                     <span className="mx-2">•</span>
-                    Designed & coded by <a href="https://balintelekes.hu" target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] hover:text-yellow-400 transition font-semibold">Bálint Elekes</a>
+                    Designed & coded by E. Balint
                   </div>
                 </div>
               </div>
