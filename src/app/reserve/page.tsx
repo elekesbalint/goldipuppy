@@ -61,10 +61,21 @@ function ReservePageContent() {
       const dueAtIso = dueAtDate.toISOString();
       const dueAtHumanHu = dueAtDate.toLocaleDateString('hu-HU', { year: 'numeric', month: '2-digit', day: '2-digit' });
       
-      // Initialize EmailJS
+      // Initialize EmailJS with better error handling
       const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_90q83xb';
       const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_yt3rsl7';
       const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'rbfLK60Katw-_bGNB';
+
+      console.log('🔧 EmailJS Configuration Debug:', {
+        serviceId,
+        templateId,
+        publicKey: publicKey.substring(0, 8) + '...',
+        hasEnvVars: {
+          serviceId: !!process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+          templateId: !!process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+          publicKey: !!process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
+        }
+      });
 
       // Prepare template parameters for email notification
       const templateParams = {
@@ -86,10 +97,16 @@ function ReservePageContent() {
         deposit_reference: depositReference,
       };
 
-      // Send email notification
+      console.log('📧 Sending EmailJS request with params:', templateParams);
+
+      // Send email notification with detailed error handling
       const result = await emailjs.send(serviceId, templateId, templateParams, publicKey);
       
+      console.log('📬 EmailJS result:', result);
+      
       if (result.status === 200) {
+        console.log('✅ Admin notification email sent successfully');
+        
         // Send confirmation email to user (with deposit info)
         await sendConfirmationEmail({ depositReference, dueAtHumanHu });
         
@@ -138,11 +155,33 @@ function ReservePageContent() {
         setSubmitted(true);
         setFormData({ name: "", email: "", phone: "", message: "" });
       } else {
-        throw new Error('EmailJS failed');
+        throw new Error(`EmailJS failed with status: ${result.status}`);
       }
-    } catch (err) {
-      console.error('Reservation submission failed:', err);
-      alert('There was a problem submitting your reservation. Please try again.');
+    } catch (err: any) {
+      console.error('❌ Reservation submission failed:', err);
+      console.error('📊 Error details:', {
+        name: err?.name,
+        message: err?.message,
+        text: err?.text,
+        status: err?.status,
+        statusText: err?.statusText,
+        response: err?.response
+      });
+      
+      // More specific error messages
+      let errorMessage = 'There was a problem submitting your reservation. Please try again.';
+      
+      if (err?.status === 412) {
+        errorMessage = 'EmailJS configuration error (412). Please check your EmailJS settings.';
+      } else if (err?.status === 400) {
+        errorMessage = 'Invalid request parameters. Please check all form fields.';
+      } else if (err?.status === 401) {
+        errorMessage = 'EmailJS authentication failed. Please check your API key.';
+      } else if (err?.status === 403) {
+        errorMessage = 'EmailJS access denied. Please check your service permissions.';
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
