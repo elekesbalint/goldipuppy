@@ -21,6 +21,7 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
   const [resolvedParams, setResolvedParams] = useState<{ breed: string; puppy: string } | null>(null);
   const [puppy, setPuppy] = useState<any>(null);
   const [isReserved, setIsReserved] = useState(false);
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
   
   useEffect(() => {
     async function resolveParams() {
@@ -38,13 +39,14 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
         
         if (foundPuppy) {
           // Convert to the expected format for the UI
+          const imagesArr = foundPuppy.images || (foundPuppy.image ? [foundPuppy.image] : []);
           const puppyForUI = {
             id: foundPuppy.id,
             name: foundPuppy.name,
             breed: foundPuppy.breed,
             breedSlug: foundPuppy.breedSlug || foundPuppy.breed_slug,
-            img: (foundPuppy.images && foundPuppy.images[0]) || foundPuppy.image,
-            image: (foundPuppy.images && foundPuppy.images[0]) || foundPuppy.image,
+            img: imagesArr[0] || '',
+            image: imagesArr[0] || '',
             price: foundPuppy.price,
             gender: foundPuppy.gender,
             age: foundPuppy.age,
@@ -79,9 +81,10 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
             healthCertificate: "Complete health certificate included",
             reserved: foundPuppy.status === 'reserved' || foundPuppy.status === 'sold',
             location: foundPuppy.location,
-            images: foundPuppy.images || (foundPuppy.image ? [foundPuppy.image] : [])
+            images: imagesArr
           };
           setPuppy(puppyForUI);
+          setCurrentImageIdx(0);
         } else {
           // Puppy not found in admin data
           setPuppy(null);
@@ -126,10 +129,10 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           {/* Image gallery */}
           <div className="space-y-4">
-            {/* Main image */}
+            {/* Main image with arrows */}
             <div className="relative rounded-3xl p-1 bg-gradient-to-br from-amber-300/60 via-orange-200/60 to-yellow-200/60 shadow-xl">
               <div className="relative w-full h-72 md:h-[22rem] rounded-3xl overflow-hidden">
-                <Image src={puppy.img} alt={puppy.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+                <Image src={(puppy.images && puppy.images[currentImageIdx]) || puppy.img} alt={puppy.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover transition-all duration-300" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 {puppy.status !== 'available' && (
                   <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-bold shadow bg-orange-500 text-white">
@@ -141,22 +144,48 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
                     📸 {puppy.images.length} photos
                   </div>
                 )}
+                {puppy.images && puppy.images.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      aria-label="Previous image"
+                      onClick={() => setCurrentImageIdx((idx) => (idx - 1 + puppy.images.length) % puppy.images.length)}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Next image"
+                      onClick={() => setCurrentImageIdx((idx) => (idx + 1) % puppy.images.length)}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center"
+                    >
+                      ›
+                    </button>
+                  </>
+                )}
               </div>
             </div>
             
             {/* Additional images */}
             {puppy.images && puppy.images.length > 1 && (
-              <div className="grid grid-cols-3 gap-2">
-                {puppy.images.slice(1).map((img: string, idx: number) => (
-                  <div key={idx} className="relative h-20 rounded-lg overflow-hidden bg-gray-100">
+              <div className="grid grid-cols-4 gap-2">
+                {puppy.images.map((img: string, idx: number) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setCurrentImageIdx(idx)}
+                    className={`relative h-16 rounded-lg overflow-hidden bg-gray-100 ring-2 ${idx === currentImageIdx ? 'ring-[var(--accent)]' : 'ring-transparent'}`}
+                    aria-label={`Show image ${idx + 1}`}
+                  >
                     <Image 
                       src={img} 
-                      alt={`${puppy.name} ${idx + 2}`} 
+                      alt={`${puppy.name} ${idx + 1}`} 
                       fill
-                      sizes="(max-width: 768px) 33vw, 16vw"
-                      className="object-cover hover:scale-110 transition-transform duration-300 cursor-pointer" 
+                      sizes="(max-width: 768px) 25vw, 12vw"
+                      className="object-cover" 
                     />
-                  </div>
+                  </button>
                 ))}
               </div>
             )}

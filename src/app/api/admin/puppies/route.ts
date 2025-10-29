@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+function getServiceClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+  if (!supabaseUrl || !serviceKey) return null;
+  return createClient(supabaseUrl, serviceKey);
+}
 
 // GET - Get all puppies
 export async function GET() {
@@ -76,12 +84,18 @@ export async function POST(request: NextRequest) {
 
     // Insert multiple images if provided
     if (Array.isArray(newPuppy.images) && newPuppy.images.length > 0) {
+      const service = getServiceClient();
       const rows = newPuppy.images.map((url: string, idx: number) => ({
         puppy_id: data.id,
         url,
         sort_order: idx,
       }));
-      await supabase.from('puppy_images').insert(rows);
+      if (service) {
+        const { error: imgErr } = await service.from('puppy_images').insert(rows);
+        if (imgErr) console.error('puppy_images insert error:', imgErr);
+      } else {
+        console.warn('Service client not available; cannot write puppy_images');
+      }
     }
 
     return NextResponse.json({ ...data, images: newPuppy.images || (data.image ? [data.image] : []) }, { status: 201 });
@@ -135,15 +149,20 @@ export async function PUT(request: NextRequest) {
 
     // If images array provided, replace existing mapping
     if (Array.isArray(updatedPuppy.images)) {
-      // Clear existing
-      await supabase.from('puppy_images').delete().eq('puppy_id', updatedPuppy.id);
-      if (updatedPuppy.images.length > 0) {
-        const rows = updatedPuppy.images.map((url: string, idx: number) => ({
-          puppy_id: updatedPuppy.id,
-          url,
-          sort_order: idx,
-        }));
-        await supabase.from('puppy_images').insert(rows);
+      const service = getServiceClient();
+      if (service) {
+        await service.from('puppy_images').delete().eq('puppy_id', updatedPuppy.id);
+        if (updatedPuppy.images.length > 0) {
+          const rows = updatedPuppy.images.map((url: string, idx: number) => ({
+            puppy_id: updatedPuppy.id,
+            url,
+            sort_order: idx,
+          }));
+          const { error: imgErr } = await service.from('puppy_images').insert(rows);
+          if (imgErr) console.error('puppy_images insert error:', imgErr);
+        }
+      } else {
+        console.warn('Service client not available; cannot update puppy_images');
       }
     }
 
