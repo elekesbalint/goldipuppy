@@ -77,10 +77,6 @@ export default function Header() {
             Reviews
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[var(--accent)] transition-all duration-300 group-hover:w-full"></span>
           </Link>
-          <Link href="/blog" className="relative text-gray-700 hover:text-[var(--accent)] transition-all duration-300 font-semibold group">
-            Blog
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[var(--accent)] transition-all duration-300 group-hover:w-full"></span>
-          </Link>
           <Link href="/contact" className="relative text-gray-700 hover:text-[var(--accent)] transition-all duration-300 font-semibold group">
             Contact
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[var(--accent)] transition-all duration-300 group-hover:w-full"></span>
@@ -181,13 +177,6 @@ export default function Header() {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             ⭐ Reviews
-          </Link>
-          <Link 
-            href="/blog" 
-            className="block px-4 py-3 text-gray-700 hover:text-[var(--accent)] hover:bg-gray-50 rounded-lg transition-all duration-300 font-semibold touch-manipulation"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            📝 Blog
           </Link>
           <Link 
             href="/contact" 
