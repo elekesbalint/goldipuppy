@@ -41,11 +41,11 @@ export default function RegisterPage() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo Section */}
         <div className="text-center mb-8">
-          <div className="inline-block bg-gradient-to-br from-blue-500 to-purple-600 rounded-full p-6 mb-6 shadow-2xl">
+          <div className="inline-block w-20 h-20 rounded-full flex items-center justify-center shadow-2xl overflow-hidden mb-6">
             <img 
               src="https://btjvjemmqwhtoyiifkcn.supabase.co/storage/v1/object/public/puppy-images/public/logo.jpeg" 
               alt="GoldiPuppy Logo" 
-              className="w-16 h-16 object-contain"
+              className="w-full h-full object-contain"
             />
           </div>
           <h1 className="text-4xl font-black text-gray-800 mb-2">
