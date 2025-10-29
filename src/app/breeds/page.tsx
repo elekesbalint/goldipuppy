@@ -85,7 +85,7 @@ export default function BreedsPage() {
           desc: breed.description || "",
           slug: breed.slug,
           popularity: "Popular",
-          size: "Large",
+          size: breed.size || "Large",
         }));
         
         // Always use admin data, even if empty
