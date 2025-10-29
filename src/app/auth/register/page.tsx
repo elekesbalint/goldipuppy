@@ -14,7 +14,14 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const redirectTo = (typeof window !== 'undefined'
+      ? `${window.location.origin}/auth/callback`
+      : 'https://goldipuppy-frontend.vercel.app/auth/callback');
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: redirectTo },
+    });
     setLoading(false);
     if (error) { setError(error.message); return; }
     router.push('/dashboard');

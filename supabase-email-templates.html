@@ -1,0 +1,179 @@
+<!-- GoldiPuppy Email Confirmation Template -->
+<!-- Copy this into Supabase Dashboard → Authentication → Email Templates → Confirm signup -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Your GoldiPuppy Account</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin: 10px 0 0 0;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .welcome-text {
+            font-size: 18px;
+            color: #1f2937;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 16px 32px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 18px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            transition: transform 0.2s;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+        .features {
+            background: #f0fdf4;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        .features h3 {
+            color: #059669;
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            color: #374151;
+        }
+        .feature-list li:before {
+            content: "🐕 ";
+            margin-right: 8px;
+        }
+        .footer {
+            background: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .footer-links {
+            margin: 20px 0;
+        }
+        .footer-links a {
+            color: #10b981;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+        .security-note {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .security-note p {
+            margin: 0;
+            color: #92400e;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🐕</div>
+            <h1 class="title">GoldiPuppy</h1>
+            <p class="subtitle">Welcome to our puppy family!</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <div class="welcome-text">
+                <strong>Hi there! 👋</strong><br>
+                Thank you for joining GoldiPuppy! We're excited to help you find your perfect furry companion.
+            </div>
+
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{{ .ConfirmationURL }}" class="cta-button">
+                    ✨ Confirm Your Account ✨
+                </a>
+            </div>
+
+            <div class="features">
+                <h3>🎉 What's next?</h3>
+                <ul class="feature-list">
+                    <li>Browse our adorable puppies</li>
+                    <li>Reserve your favorite companion</li>
+                    <li>Track your reservations in your dashboard</li>
+                    <li>Get expert support throughout the process</li>
+                    <li>Join our community of happy pet parents</li>
+                </ul>
+            </div>
+
+            <div class="security-note">
+                <p><strong>🔒 Security Note:</strong> This confirmation link will expire in 24 hours for your security. If you didn't create an account with us, please ignore this email.</p>
+            </div>
+
+            <div style="text-align: center; margin: 30px 0; color: #6b7280;">
+                <p>If the button doesn't work, copy and paste this link into your browser:</p>
+                <p style="word-break: break-all; font-family: monospace; background: #f3f4f6; padding: 10px; border-radius: 8px; font-size: 12px;">{{ .ConfirmationURL }}</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-links">
+                <a href="https://goldipuppy-frontend.vercel.app">Visit Website</a>
+                <a href="https://goldipuppy-frontend.vercel.app/contact">Contact Us</a>
+                <a href="https://goldipuppy-frontend.vercel.app/privacy">Privacy Policy</a>
+            </div>
+            <p>© 2025 GoldiPuppy. All rights reserved.</p>
+            <p>Designed & coded by E. Balint</p>
+        </div>
+    </div>
+</body>
+</html>
