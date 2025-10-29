@@ -151,8 +151,8 @@ export default function RootLayout({
             <div className="border-t border-gray-700 pt-6 sm:pt-8">
               <div className="flex flex-col lg:flex-row justify-between items-center gap-4 sm:gap-6">
                 <div className="flex flex-wrap justify-center lg:justify-start gap-4 sm:gap-6 text-xs sm:text-sm">
-                  <a href="#" className="text-gray-300 hover:text-[var(--accent)] transition">Privacy Policy</a>
-                  <a href="#" className="text-gray-300 hover:text-[var(--accent)] transition">Terms of Service</a>
+                  <Link href="/privacy" className="text-gray-300 hover:text-[var(--accent)] transition">Privacy Policy</Link>
+                  <Link href="/terms" className="text-gray-300 hover:text-[var(--accent)] transition">Terms of Service</Link>
                   <a href="#" className="text-gray-300 hover:text-[var(--accent)] transition">Cookie Policy</a>
                   <a href="#" className="text-gray-300 hover:text-[var(--accent)] transition">Sitemap</a>
                 </div>

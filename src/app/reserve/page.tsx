@@ -26,6 +26,8 @@ function ReservePageContent() {
   });
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
+  const [acceptPrivacy, setAcceptPrivacy] = useState(false);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -558,7 +560,7 @@ function ReservePageContent() {
                     />
                   </div>
                   
-                  <button
+                    <button
                     type="button"
                     onClick={() => setCurrentStep(2)}
                     disabled={!formData.name || !formData.email}
@@ -606,6 +608,35 @@ function ReservePageContent() {
                     </div>
                   </div>
                   
+                  {/* Legal consents */}
+                  <div className="space-y-3">
+                    <label className="flex items-start gap-3 text-sm text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={acceptTerms}
+                        onChange={(e) => setAcceptTerms(e.target.checked)}
+                        className="mt-1 h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                        required
+                      />
+                      <span>
+                        Elfogadom az <a href="/terms" className="text-green-700 underline">Általános Szerződési Feltételeket (ÁSZF)</a>.
+                      </span>
+                    </label>
+                    <label className="flex items-start gap-3 text-sm text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={acceptPrivacy}
+                        onChange={(e) => setAcceptPrivacy(e.target.checked)}
+                        className="mt-1 h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                        required
+                      />
+                      <span>
+                        Elfogadom az <a href="/privacy" className="text-green-700 underline">Adatkezelési tájékoztatót</a>.
+                      </span>
+                    </label>
+                    <p className="text-xs text-gray-500">A foglalás elküldésével kijelented, hogy elmúltál 18 éves.</p>
+                  </div>
+
                   <div className="flex gap-4">
                     <button
                       type="button"
@@ -617,7 +648,7 @@ function ReservePageContent() {
                     </button>
                     <button
                       type="submit"
-                      disabled={isSubmitting || !formData.message}
+                      disabled={isSubmitting || !formData.message || !acceptTerms || !acceptPrivacy}
                       className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold text-xl py-4 rounded-2xl hover:scale-105 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 group"
                     >
                       {isSubmitting ? (
