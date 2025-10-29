@@ -20,19 +20,53 @@ export default function DashboardPage() {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push('/auth/login?next=/dashboard'); return; }
-      const res = await fetch('/api/reservations');
+      
+      const session = await supabase.auth.getSession();
+      const token = session.data.session?.access_token;
+      
+      if (!token) {
+        console.error('No session token');
+        setLoading(false);
+        return;
+      }
+
+      const res = await fetch('/api/reservations', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
       if (res.ok) {
         const list = await res.json();
         setReservations(list);
+      } else {
+        console.error('Failed to fetch reservations:', await res.text());
       }
       setLoading(false);
     })();
   }, [router]);
 
   const cancelReservation = async (id: string) => {
-    const res = await fetch(`/api/reservations?id=${id}`, { method: 'DELETE' });
+    const session = await supabase.auth.getSession();
+    const token = session.data.session?.access_token;
+    
+    if (!token) {
+      alert('Not authenticated');
+      return;
+    }
+
+    const res = await fetch(`/api/reservations?id=${id}`, { 
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    
     if (res.ok) {
       setReservations(prev => prev.filter(r => r.id !== id));
+    } else {
+      const error = await res.json();
+      alert(`Failed to cancel: ${error.error || 'Unknown error'}`);
     }
   };
 

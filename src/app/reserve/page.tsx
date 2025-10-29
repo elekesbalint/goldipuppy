@@ -29,6 +29,8 @@ function ReservePageContent() {
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [acceptPrivacy, setAcceptPrivacy] = useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -41,6 +43,14 @@ function ReservePageContent() {
       ...prev,
       message: `Hi! I would like to reserve ${puppyName}. Please let me know about the next steps, pricing, and availability.\n\nThank you!`
     }));
+
+    // Check if user is logged in
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsUserLoggedIn(!!user);
+      setCheckingAuth(false);
+    };
+    checkAuth();
     
     return () => {
       // Reset background on cleanup
@@ -144,20 +154,39 @@ function ReservePageContent() {
 
         // Create reservation record for logged-in user
         try {
-          const { data: { user } } = await supabase.auth.getUser();
-          if (user) {
-            await fetch('/api/reservations', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                puppy_id: searchParams.get('puppyId'),
-                deposit_due_at: dueAtIso,
-              }),
-            });
-            console.log('✅ Reservation record created for user');
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          if (user && puppyId) {
+            const session = await supabase.auth.getSession();
+            const token = session.data.session?.access_token;
+            
+            if (token) {
+              const reservationResponse = await fetch('/api/reservations', {
+                method: 'POST',
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  puppy_id: puppyId,
+                  deposit_due_at: dueAtIso,
+                }),
+              });
+              
+              if (reservationResponse.ok) {
+                const reservationData = await reservationResponse.json();
+                console.log('✅ Reservation record created for user:', reservationData);
+              } else {
+                const errorData = await reservationResponse.json();
+                console.error('❌ Failed to create reservation:', errorData);
+              }
+            } else {
+              console.warn('⚠️ No session token available');
+            }
+          } else {
+            console.warn('⚠️ User not logged in or puppyId missing, skipping reservation record');
           }
         } catch (error) {
-          console.warn('Could not create reservation row (user may be anonymous):', error);
+          console.error('❌ Error creating reservation row:', error);
         }
         
         // Add puppy to reserved list in localStorage
@@ -524,6 +553,31 @@ function ReservePageContent() {
 
           {/* Reservation Form */}
           <div className={`bg-white/90 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-gray-200 transition-all duration-1000 delay-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            {/* Login Required Alert */}
+            {!checkingAuth && !isUserLoggedIn && (
+              <div className="mb-6 bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-6">
+                <div className="flex items-start gap-4">
+                  <div className="text-3xl">🔐</div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-yellow-800 mb-2">Login Required</h3>
+                    <p className="text-yellow-700 mb-4">
+                      You need to be logged in to reserve a puppy. Your reservation will be saved to your dashboard where you can manage it.
+                    </p>
+                    <Link
+                      href={`/auth/login?next=${encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/reserve')}`}
+                      className="inline-block bg-yellow-600 text-white font-bold px-6 py-3 rounded-lg hover:bg-yellow-700 transition-colors"
+                    >
+                      Login or Register →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {checkingAuth && (
+              <div className="mb-6 text-center text-gray-600">Checking authentication...</div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Step 1: Basic Info */}
               {currentStep === 1 && (
