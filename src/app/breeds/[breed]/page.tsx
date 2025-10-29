@@ -170,7 +170,8 @@ export default function BreedPage() {
               .filter((puppy: any) => (puppy.breedSlug || puppy.breed_slug) === breedSlug)
               .map((puppy: any) => ({
                 name: puppy.name,
-                img: puppy.image,
+                img: (puppy.images && puppy.images[0]) || puppy.image,
+                images: puppy.images || (puppy.image ? [puppy.image] : []),
                 price: puppy.price,
                 gender: puppy.gender,
                 desc: puppy.description,
@@ -483,6 +484,7 @@ export default function BreedPage() {
               }}
             >
               <div className="relative overflow-hidden h-48">
+                {/* Main image */}
                 <Image 
                   src={puppy.img} 
                   alt={puppy.name} 
@@ -495,11 +497,40 @@ export default function BreedPage() {
                   💰 €{puppy.price}
                 </div>
                 
+                {/* Image count indicator */}
+                {puppy.images && puppy.images.length > 1 && (
+                  <div className="absolute top-4 left-4 bg-black/70 text-white rounded-full px-2 py-1 text-xs font-bold">
+                    📸 {puppy.images.length}
+                  </div>
+                )}
+                
                 {/* Heart overlay on hover */}
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <div className="text-5xl text-white animate-pulse">💕</div>
                 </div>
               </div>
+              
+              {/* Additional images preview */}
+              {puppy.images && puppy.images.length > 1 && (
+                <div className="flex gap-1 p-2 bg-gray-50">
+                  {puppy.images.slice(1, 4).map((img: string, idx: number) => (
+                    <div key={idx} className="relative w-12 h-12 rounded overflow-hidden">
+                      <Image 
+                        src={img} 
+                        alt={`${puppy.name} ${idx + 2}`} 
+                        fill
+                        sizes="48px"
+                        className="object-cover" 
+                      />
+                    </div>
+                  ))}
+                  {puppy.images.length > 4 && (
+                    <div className="w-12 h-12 bg-gray-300 rounded flex items-center justify-center text-xs font-bold text-gray-600">
+                      +{puppy.images.length - 4}
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="p-6">
                 <h3 className="text-xl font-bold text-[var(--foreground)] mb-2 group-hover:text-[var(--accent)] transition-colors duration-300">{puppy.name}</h3>
                 <div className={`mb-2 text-sm font-semibold px-3 py-1 rounded-full inline-block transition-all duration-300 hover:scale-110 ${

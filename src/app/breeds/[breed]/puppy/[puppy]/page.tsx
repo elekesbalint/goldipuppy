@@ -124,17 +124,42 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
       <div className="w-full max-w-4xl mb-10">
         <Link href={`/breeds/${resolvedParams.breed}`} className="text-[var(--accent)] underline mb-4 inline-block">← Back to breed</Link>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          {/* Image card */}
-          <div className="relative rounded-3xl p-1 bg-gradient-to-br from-amber-300/60 via-orange-200/60 to-yellow-200/60 shadow-xl">
-            <div className="relative w-full h-72 md:h-[22rem] rounded-3xl overflow-hidden">
-              <Image src={puppy.img} alt={puppy.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-              {puppy.status !== 'available' && (
-                <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-bold shadow bg-orange-500 text-white">
-                  {puppy.status === 'reserved' ? 'Reserved' : 'Sold'}
-                </div>
-              )}
+          {/* Image gallery */}
+          <div className="space-y-4">
+            {/* Main image */}
+            <div className="relative rounded-3xl p-1 bg-gradient-to-br from-amber-300/60 via-orange-200/60 to-yellow-200/60 shadow-xl">
+              <div className="relative w-full h-72 md:h-[22rem] rounded-3xl overflow-hidden">
+                <Image src={puppy.img} alt={puppy.name} fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                {puppy.status !== 'available' && (
+                  <div className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-bold shadow bg-orange-500 text-white">
+                    {puppy.status === 'reserved' ? 'Reserved' : 'Sold'}
+                  </div>
+                )}
+                {puppy.images && puppy.images.length > 1 && (
+                  <div className="absolute top-4 left-4 bg-black/70 text-white rounded-full px-3 py-1 text-sm font-bold">
+                    📸 {puppy.images.length} photos
+                  </div>
+                )}
+              </div>
             </div>
+            
+            {/* Additional images */}
+            {puppy.images && puppy.images.length > 1 && (
+              <div className="grid grid-cols-3 gap-2">
+                {puppy.images.slice(1).map((img: string, idx: number) => (
+                  <div key={idx} className="relative h-20 rounded-lg overflow-hidden bg-gray-100">
+                    <Image 
+                      src={img} 
+                      alt={`${puppy.name} ${idx + 2}`} 
+                      fill
+                      sizes="(max-width: 768px) 33vw, 16vw"
+                      className="object-cover hover:scale-110 transition-transform duration-300 cursor-pointer" 
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Info card */}
