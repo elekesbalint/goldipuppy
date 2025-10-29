@@ -404,6 +404,8 @@ export default function AdminPuppiesPage() {
                         setFormData({ ...formData, images: next, image: next[0] || formData.image || '' });
                       } finally {
                         setIsUploading(false);
+                        // Clear the input so the same file can be selected again if needed
+                        e.target.value = '';
                       }
                     }}
                     className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
