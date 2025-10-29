@@ -572,11 +572,34 @@ export default function AdminPuppiesPage() {
                             <button
                               onClick={async () => {
                                 if (!confirm('Megjelölöd előleg beérkezettként?')) return;
+                                
+                                // Update puppy status
                                 await fetch('/api/admin/puppies', {
                                   method: 'PUT',
                                   headers: { 'Content-Type': 'application/json' },
                                   body: JSON.stringify({ ...puppy, status: 'reserved', deposit_status: 'paid' }),
                                 });
+                                
+                                // Also update the reservation status to 'paid'
+                                try {
+                                  const reservationsResponse = await fetch('/api/admin/reservations', {
+                                    method: 'GET',
+                                  });
+                                  if (reservationsResponse.ok) {
+                                    const reservations = await reservationsResponse.json();
+                                    const reservation = reservations.find((r: any) => r.puppy_id === puppy.id && r.status === 'pending');
+                                    if (reservation) {
+                                      await fetch('/api/admin/reservations', {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ id: reservation.id, status: 'paid' }),
+                                      });
+                                    }
+                                  }
+                                } catch (error) {
+                                  console.error('Could not update reservation status:', error);
+                                }
+                                
                                 await loadPuppies();
                               }}
                               className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm font-medium"
@@ -586,11 +609,34 @@ export default function AdminPuppiesPage() {
                             <button
                               onClick={async () => {
                                 if (!confirm('Lejártnak/lemondottnak jelölöd? Visszaáll available-re.')) return;
+                                
+                                // Update puppy status
                                 await fetch('/api/admin/puppies', {
                                   method: 'PUT',
                                   headers: { 'Content-Type': 'application/json' },
                                   body: JSON.stringify({ ...puppy, status: 'available', deposit_status: 'none', deposit_due_at: null, deposit_reference: null }),
                                 });
+                                
+                                // Also update the reservation status to 'cancelled'
+                                try {
+                                  const reservationsResponse = await fetch('/api/admin/reservations', {
+                                    method: 'GET',
+                                  });
+                                  if (reservationsResponse.ok) {
+                                    const reservations = await reservationsResponse.json();
+                                    const reservation = reservations.find((r: any) => r.puppy_id === puppy.id && r.status === 'pending');
+                                    if (reservation) {
+                                      await fetch('/api/admin/reservations', {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ id: reservation.id, status: 'cancelled' }),
+                                      });
+                                    }
+                                  }
+                                } catch (error) {
+                                  console.error('Could not update reservation status:', error);
+                                }
+                                
                                 await loadPuppies();
                               }}
                               className="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm font-medium"

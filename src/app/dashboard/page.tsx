@@ -206,8 +206,8 @@ export default function DashboardPage() {
                             r.status === 'cancelled' ? 'bg-red-100 text-red-800' :
                             'bg-gray-100 text-gray-800'
                           }`}>
-                            {r.status === 'pending' ? '⏳ Pending' :
-                             r.status === 'paid' ? '✅ Paid' :
+                            {r.status === 'pending' ? '⏳ Deposit Pending' :
+                             r.status === 'paid' ? '✅ Deposit Paid' :
                              r.status === 'cancelled' ? '❌ Cancelled' :
                              '⏰ Expired'}
                           </span>
@@ -215,7 +215,18 @@ export default function DashboardPage() {
                         <div className="text-gray-600 space-y-1">
                           <p><strong>Puppy ID:</strong> {r.puppy_id}</p>
                           <p><strong>Reserved:</strong> {new Date(r.created_at).toLocaleDateString('hu-HU')}</p>
-                          {due && (
+                          {r.status === 'paid' && (
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-2">
+                              <p className="text-green-800 font-semibold flex items-center gap-2">
+                                <span>✅</span>
+                                <span>Deposit has been confirmed by admin!</span>
+                              </p>
+                              <p className="text-green-700 text-sm mt-1">
+                                Your puppy reservation is now secured. We'll contact you soon about the next steps.
+                              </p>
+                            </div>
+                          )}
+                          {due && r.status === 'pending' && (
                             <p className={`font-semibold ${
                               isExpired ? 'text-red-600' : 
                               canCancel ? 'text-yellow-600' : 
