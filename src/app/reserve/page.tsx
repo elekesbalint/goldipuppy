@@ -38,19 +38,28 @@ function ReservePageContent() {
     document.documentElement.style.background = 'linear-gradient(to bottom right, #f8fafc, #f1f5f9, #dbeafe)';
     document.body.style.background = 'linear-gradient(to bottom right, #f8fafc, #f1f5f9, #dbeafe)';
     
+    // Check if user is logged in and pre-fill email
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsUserLoggedIn(!!user);
+      
+      // Pre-fill email if user is logged in
+      if (user?.email) {
+        setFormData(prev => ({
+          ...prev,
+          email: user.email || ''
+        }));
+      }
+      
+      setCheckingAuth(false);
+    };
+    checkAuth();
+    
     // Pre-fill message with puppy name
     setFormData(prev => ({
       ...prev,
       message: `Hi! I would like to reserve ${puppyName}. Please let me know about the next steps, pricing, and availability.\n\nThank you!`
     }));
-
-    // Check if user is logged in
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsUserLoggedIn(!!user);
-      setCheckingAuth(false);
-    };
-    checkAuth();
     
     return () => {
       // Reset background on cleanup
@@ -575,7 +584,12 @@ function ReservePageContent() {
             )}
 
             {checkingAuth && (
-              <div className="mb-6 text-center text-gray-600">Checking authentication...</div>
+              <div className="mb-6 bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 text-center">
+                <div className="flex items-center justify-center gap-3">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                  <span className="text-blue-800 font-semibold">Checking authentication...</span>
+                </div>
+              </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -606,6 +620,11 @@ function ReservePageContent() {
                     <div>
                       <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
                         📧 Email Address *
+                        {isUserLoggedIn && (
+                          <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                            Auto-filled
+                          </span>
+                        )}
                       </label>
                       <input
                         type="email"
@@ -614,9 +633,20 @@ function ReservePageContent() {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full rounded-2xl border-2 border-gray-200 px-6 py-4 focus:outline-none focus:ring-4 focus:ring-green-200 focus:border-green-400 transition-all hover:shadow-lg text-lg text-gray-800"
+                        readOnly={isUserLoggedIn}
+                        className={`w-full rounded-2xl border-2 px-6 py-4 focus:outline-none transition-all text-lg text-gray-800 ${
+                          isUserLoggedIn 
+                            ? 'border-green-300 bg-green-50 cursor-not-allowed' 
+                            : 'border-gray-200 focus:ring-4 focus:ring-green-200 focus:border-green-400 hover:shadow-lg'
+                        }`}
                         placeholder="your@email.com"
                       />
+                      {isUserLoggedIn && (
+                        <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                          <span>🔒</span>
+                          <span>Email is automatically filled from your account and cannot be changed</span>
+                        </p>
+                      )}
                     </div>
                   </div>
                   
