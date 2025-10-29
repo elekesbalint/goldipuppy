@@ -16,6 +16,7 @@ interface Puppy {
   location: string;
   description: string;
   image: string;
+  images?: string[];
   featured: boolean;
   deposit_status?: 'none' | 'pending' | 'paid';
   deposit_due_at?: string | null;
@@ -43,6 +44,7 @@ export default function AdminPuppiesPage() {
     location: '',
     description: '',
     image: '',
+    images: [],
     featured: false,
   });
 
@@ -150,6 +152,7 @@ export default function AdminPuppiesPage() {
       location: '',
       description: '',
       image: '',
+      images: [],
       featured: false,
     });
   };
@@ -328,88 +331,107 @@ export default function AdminPuppiesPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kép
-                </label>
-                <div className="space-y-2">
-                  {formData.image && (
-                    <div className="flex items-center gap-3">
-                      <img src={formData.image} alt="preview" className="w-32 h-32 object-cover rounded" />
+                <label className="block text-sm font-medium text-gray-700 mb-1">Képek</label>
+                <p className="text-xs text-gray-500 mb-2">Tölts fel több képet. Az első lesz az elsődleges.</p>
+                {/* Previews */}
+                <div className="flex flex-wrap gap-3 mb-3">
+                  {(formData.images || []).map((url, idx) => (
+                    <div key={url + idx} className="relative">
+                      <img src={url} alt={`preview-${idx}`} className="w-24 h-24 object-cover rounded" />
                       <button
                         type="button"
                         onClick={async () => {
-                          if (!formData.image) return;
-                          if (!confirm('Biztosan törlöd a képet a tárhelyről is?')) return;
+                          if (!confirm('Kép eltávolítása? A tárhelyről is törölhető.')) return;
+                          // Try to delete from storage as well
                           try {
-                            const res = await fetch('/api/admin/upload', {
+                            await fetch('/api/admin/upload', {
                               method: 'DELETE',
                               headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({ url: formData.image }),
+                              body: JSON.stringify({ url }),
                             });
-                            if (!res.ok) {
-                              const data = await res.json().catch(() => ({} as any));
-                              alert(data.error || 'Törlési hiba');
-                              return;
-                            }
-                            setFormData({ ...formData, image: '' });
-                          } catch (e) {
-                            alert('Törlési hiba');
-                          }
+                          } catch {}
+                          const next = (formData.images || []).filter((u) => u !== url);
+                          setFormData({ ...formData, images: next, image: next[0] || '' });
                         }}
-                        className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-xs font-medium"
+                        className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
+                        title="Törlés"
                       >
-                        Kép törlése
+                        ×
                       </button>
+                      <div className="text-center mt-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            // Move to first
+                            const arr = [...(formData.images || [])];
+                            const i = arr.indexOf(url);
+                            if (i > -1) {
+                              arr.splice(i, 1);
+                              arr.unshift(url);
+                              setFormData({ ...formData, images: arr, image: arr[0] });
+                            }
+                          }}
+                          className="text-xs text-blue-600 hover:underline"
+                        >
+                          Elsődleges
+                        </button>
+                      </div>
                     </div>
-                  )}
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (!file) return;
-                        setIsUploading(true);
-                        try {
+                  ))}
+                </div>
+                {/* Upload */}
+                <div className="flex items-center gap-3 mb-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files || []);
+                      if (files.length === 0) return;
+                      setIsUploading(true);
+                      try {
+                        const uploaded: string[] = [];
+                        for (const file of files) {
                           const fd = new FormData();
                           fd.append('file', file);
                           fd.append('folder', 'public');
                           const res = await fetch('/api/admin/upload', { method: 'POST', body: fd });
                           const data = await res.json();
-                          if (res.ok) {
-                            setFormData({ ...formData, image: data.url });
-                          } else {
-                            alert(data.error || 'Feltöltési hiba');
-                          }
-                        } finally {
-                          setIsUploading(false);
+                          if (res.ok) uploaded.push(data.url);
+                          else alert(data.error || 'Feltöltési hiba');
                         }
-                      }}
-                      className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
-                    />
-                    <span className="text-sm text-gray-500">{isUploading ? 'Feltöltés...' : ''}</span>
-                    {formData.image && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          // Replace: simply trigger file picker by clicking the input
-                          // Users can pick a new file; previous image can be left as-is or deleted first.
-                          // We programmatically focus the input for better UX.
-                          (document.activeElement as HTMLElement)?.blur();
-                        }}
-                        className="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs font-medium"
-                      >
-                        Kép cseréje
-                      </button>
-                    )}
-                  </div>
+                        const next = [ ...(formData.images || []), ...uploaded ];
+                        setFormData({ ...formData, images: next, image: next[0] || formData.image || '' });
+                      } finally {
+                        setIsUploading(false);
+                      }
+                    }}
+                    className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                  />
+                  <span className="text-sm text-gray-500">{isUploading ? 'Feltöltés...' : ''}</span>
+                </div>
+                {/* Manual add by URL */}
+                <div className="flex gap-2">
                   <input
                     type="url"
-                    value={formData.image}
-                    onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                    value={''}
+                    onChange={() => {}}
+                    placeholder="URL hozzáadásához használd az alábbi gombot"
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                    placeholder="vagy illeszd be az URL-t"
+                    readOnly
                   />
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const raw = prompt('Kép URL hozzáadása');
+                      if (!raw) return;
+                      const next = [ ...(formData.images || []), raw ];
+                      setFormData({ ...formData, images: next, image: next[0] || formData.image || '' });
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm font-medium"
+                  >
+                    URL hozzáadása
+                  </button>
                 </div>
               </div>
 

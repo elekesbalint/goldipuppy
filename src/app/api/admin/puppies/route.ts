@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 // GET - Get all puppies
 export async function GET() {
   try {
-    const { data, error } = await supabase
+    const { data: puppies, error } = await supabase
       .from('puppies')
       .select('*')
       .order('featured', { ascending: false })
@@ -12,7 +12,31 @@ export async function GET() {
 
     if (error) throw error;
 
-    return NextResponse.json(data || []);
+    // Fetch images for all puppies and group them
+    const ids = (puppies || []).map((p: any) => p.id);
+    let imagesByPuppy: Record<string, string[]> = {};
+    if (ids.length > 0) {
+      const { data: images } = await supabase
+        .from('puppy_images')
+        .select('puppy_id,url,sort_order')
+        .in('puppy_id', ids)
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: true });
+      if (images) {
+        for (const img of images) {
+          const key = (img as any).puppy_id;
+          if (!imagesByPuppy[key]) imagesByPuppy[key] = [];
+          imagesByPuppy[key].push((img as any).url);
+        }
+      }
+    }
+
+    const withImages = (puppies || []).map((p: any) => ({
+      ...p,
+      images: imagesByPuppy[p.id] || (p.image ? [p.image] : []),
+    }));
+
+    return NextResponse.json(withImages);
   } catch (error) {
     console.error('Error fetching puppies:', error);
     return NextResponse.json([], { status: 500 });
@@ -50,7 +74,17 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json(data, { status: 201 });
+    // Insert multiple images if provided
+    if (Array.isArray(newPuppy.images) && newPuppy.images.length > 0) {
+      const rows = newPuppy.images.map((url: string, idx: number) => ({
+        puppy_id: data.id,
+        url,
+        sort_order: idx,
+      }));
+      await supabase.from('puppy_images').insert(rows);
+    }
+
+    return NextResponse.json({ ...data, images: newPuppy.images || (data.image ? [data.image] : []) }, { status: 201 });
   } catch (error: any) {
     console.error('Error creating puppy:', error);
     return NextResponse.json(
@@ -99,7 +133,21 @@ export async function PUT(request: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json(data);
+    // If images array provided, replace existing mapping
+    if (Array.isArray(updatedPuppy.images)) {
+      // Clear existing
+      await supabase.from('puppy_images').delete().eq('puppy_id', updatedPuppy.id);
+      if (updatedPuppy.images.length > 0) {
+        const rows = updatedPuppy.images.map((url: string, idx: number) => ({
+          puppy_id: updatedPuppy.id,
+          url,
+          sort_order: idx,
+        }));
+        await supabase.from('puppy_images').insert(rows);
+      }
+    }
+
+    return NextResponse.json({ ...data, images: updatedPuppy.images });
   } catch (error: any) {
     console.error('Error updating puppy:', error);
     return NextResponse.json(
@@ -122,12 +170,17 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // First, get the puppy to retrieve the image URL
+    // First, get the puppy to retrieve the image URL(s)
     const { data: puppy, error: fetchError } = await supabase
       .from('puppies')
       .select('image')
       .eq('id', id)
       .single();
+
+    const { data: extraImages } = await supabase
+      .from('puppy_images')
+      .select('url')
+      .eq('puppy_id', id);
 
     if (fetchError) throw fetchError;
 
@@ -139,10 +192,12 @@ export async function DELETE(request: NextRequest) {
 
     if (deleteError) throw deleteError;
 
-    // If puppy had an image stored in Supabase Storage, delete it
-    if (puppy?.image && puppy.image.includes('supabase.co/storage')) {
+    // If puppy had image(s) stored in Supabase Storage, delete them
+    const urlsToDelete = [puppy?.image, ...(extraImages?.map((r: any) => r.url) || [])].filter(Boolean) as string[];
+    for (const u of urlsToDelete) {
+      if (u && u.includes('supabase.co/storage')) {
       try {
-        const url = new URL(puppy.image);
+        const url = new URL(u);
         const pathParts = url.pathname.split('/');
         const bucketIndex = pathParts.indexOf('puppy-images');
         

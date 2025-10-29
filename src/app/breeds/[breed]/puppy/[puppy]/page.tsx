@@ -43,8 +43,8 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
             name: foundPuppy.name,
             breed: foundPuppy.breed,
             breedSlug: foundPuppy.breedSlug || foundPuppy.breed_slug,
-            img: foundPuppy.image,
-            image: foundPuppy.image,
+            img: (foundPuppy.images && foundPuppy.images[0]) || foundPuppy.image,
+            image: (foundPuppy.images && foundPuppy.images[0]) || foundPuppy.image,
             price: foundPuppy.price,
             gender: foundPuppy.gender,
             age: foundPuppy.age,
@@ -78,7 +78,8 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
             },
             healthCertificate: "Complete health certificate included",
             reserved: foundPuppy.status === 'reserved' || foundPuppy.status === 'sold',
-            location: foundPuppy.location
+            location: foundPuppy.location,
+            images: foundPuppy.images || (foundPuppy.image ? [foundPuppy.image] : [])
           };
           setPuppy(puppyForUI);
         } else {

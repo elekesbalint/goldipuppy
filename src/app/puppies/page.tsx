@@ -57,7 +57,7 @@ export default function PuppiesPage() {
           name: puppy.name,
           breed: puppy.breed,
           breedSlug: puppy.breedSlug || puppy.breed_slug,
-          img: puppy.image,
+          img: (puppy.images && puppy.images[0]) || puppy.image,
           price: puppy.price,
           gender: puppy.gender,
           age: puppy.age,
@@ -67,6 +67,7 @@ export default function PuppiesPage() {
           available: puppy.status === 'available',
           featured: puppy.featured,
           reserved: puppy.status === 'reserved',
+          images: puppy.images || (puppy.image ? [puppy.image] : []),
         }));
         
         console.log('Loaded from admin API:', mapped);
@@ -253,13 +254,13 @@ export default function PuppiesPage() {
           {/* Main Title */}
           <div className={`mb-8 sm:mb-12 transition-all duration-1000 delay-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
             <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black text-white mb-4 sm:mb-6 leading-none">
-              <span className="block bg-gradient-to-r from-[var(--accent)] via-yellow-400 to-orange-500 bg-clip-text text-transparent animate-pulse">
+              <span className="block bg-gradient-to-r from-amber-500 via-orange-400 to-yellow-500 bg-clip-text text-transparent animate-pulse">
                 FIND YOUR
               </span>
               <span className="block text-white drop-shadow-2xl">
                 PERFECT
               </span>
-              <span className="block bg-gradient-to-r from-pink-400 via-purple-500 to-blue-500 bg-clip-text text-transparent animate-pulse">
+              <span className="block bg-gradient-to-r from-emerald-400 via-teal-500 to-sky-500 bg-clip-text text-transparent animate-pulse">
                 PUPPY
               </span>
             </h1>
