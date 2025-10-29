@@ -163,8 +163,6 @@ export default function RootLayout({
                   </div>
                   <div className="text-gray-300 text-xs sm:text-sm text-center">
                     © 2025 GoldiPuppy. All rights reserved.
-                    <span className="mx-2">•</span>
-                    Designed & coded by E. Balint
                   </div>
                 </div>
               </div>
