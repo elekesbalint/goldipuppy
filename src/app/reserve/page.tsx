@@ -98,6 +98,7 @@ function ReservePageContent() {
         deposit_due_days: '2',
         deposit_due_date: dueAtHumanHu,
         deposit_reference: depositReference,
+        dashboard_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/dashboard`,
       };
 
       console.log('📧 Sending EmailJS request with params:', templateParams);
@@ -228,6 +229,7 @@ function ReservePageContent() {
         deposit_due_date: dueAtHumanHu,
         deposit_reference: depositReference,
         submitted_at: new Date().toLocaleString('hu-HU', { timeZone: 'Europe/Budapest' }),
+        dashboard_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/dashboard`,
       };
 
       const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_90q83xb';
@@ -579,9 +581,17 @@ function ReservePageContent() {
                     />
                   </div>
                   
-                    <button
+                  <button
                     type="button"
-                    onClick={() => setCurrentStep(2)}
+                    onClick={async () => {
+                      const { data: { user } } = await supabase.auth.getUser();
+                      if (!user) {
+                        const current = typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/reserve';
+                        window.location.href = `/auth/login?next=${encodeURIComponent(current)}`;
+                        return;
+                      }
+                      setCurrentStep(2);
+                    }}
                     disabled={!formData.name || !formData.email}
                     className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold text-xl py-4 rounded-2xl hover:scale-105 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 group"
                   >

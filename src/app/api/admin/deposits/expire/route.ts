@@ -32,6 +32,16 @@ export async function POST() {
 
     if (updErr) throw updErr;
 
+    // Also expire matching user reservations
+    const { error: resErr } = await supabase
+      .from('reservations')
+      .update({ status: 'expired' })
+      .in('puppy_id', ids)
+      .eq('status', 'pending')
+      .lt('deposit_due_at', nowIso);
+
+    if (resErr) throw resErr;
+
     return NextResponse.json({ expired: ids.length });
   } catch (error: any) {
     return NextResponse.json({ error: error?.message || 'Expire failed' }, { status: 500 });
