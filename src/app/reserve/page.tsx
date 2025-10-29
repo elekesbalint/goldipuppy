@@ -59,7 +59,7 @@ function ReservePageContent() {
         ? `GOLDIPUPPY-${puppyIdParam.slice(0, 8).toUpperCase()}`
         : `GOLDIPUPPY-${Math.random().toString(36).slice(2, 10).toUpperCase()}`;
       const dueAtDate = new Date();
-      dueAtDate.setDate(dueAtDate.getDate() + 12);
+      dueAtDate.setDate(dueAtDate.getDate() + 2);
       const dueAtIso = dueAtDate.toISOString();
       const dueAtHumanHu = dueAtDate.toLocaleDateString('hu-HU', { year: 'numeric', month: '2-digit', day: '2-digit' });
       
@@ -94,7 +94,7 @@ function ReservePageContent() {
         deposit_beneficiary: 'Aranyi Attila',
         deposit_bank: 'K&H Bank',
         deposit_bic: 'OKHBHUHB',
-        deposit_due_days: '12',
+        deposit_due_days: '2',
         deposit_due_date: dueAtHumanHu,
         deposit_reference: depositReference,
       };
@@ -205,7 +205,7 @@ function ReservePageContent() {
         deposit_beneficiary: 'Aranyi Attila',
         deposit_bank: 'K&H Bank',
         deposit_bic: 'OKHBHUHB',
-        deposit_due_days: '12',
+        deposit_due_days: '2',
         deposit_due_date: dueAtHumanHu,
         deposit_reference: depositReference,
         submitted_at: new Date().toLocaleString('hu-HU', { timeZone: 'Europe/Budapest' }),
