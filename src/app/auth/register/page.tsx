@@ -42,7 +42,11 @@ export default function RegisterPage() {
         {/* Logo Section */}
         <div className="text-center mb-8">
           <div className="inline-block bg-gradient-to-br from-blue-500 to-purple-600 rounded-full p-6 mb-6 shadow-2xl">
-            <span className="text-6xl">✨</span>
+            <img 
+              src="https://btjvjemmqwhtoyiifkcn.supabase.co/storage/v1/object/public/puppy-images/public/logo.jpeg" 
+              alt="GoldiPuppy Logo" 
+              className="w-16 h-16 object-contain"
+            />
           </div>
           <h1 className="text-4xl font-black text-gray-800 mb-2">
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
