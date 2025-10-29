@@ -55,6 +55,13 @@ export default function DashboardPage() {
       return;
     }
 
+    // Find the reservation to get puppy_id
+    const reservation = reservations.find(r => r.id === id);
+    if (!reservation) {
+      alert('Reservation not found');
+      return;
+    }
+
     const res = await fetch(`/api/reservations?id=${id}`, { 
       method: 'DELETE',
       headers: {
@@ -63,6 +70,32 @@ export default function DashboardPage() {
     });
     
     if (res.ok) {
+      // Also update the puppy status back to available in admin
+      try {
+        const puppyResponse = await fetch('/api/admin/puppies');
+        if (puppyResponse.ok) {
+          const allPuppies = await puppyResponse.json();
+          const puppyToUpdate = allPuppies.find((p: any) => p.id === reservation.puppy_id);
+          
+          if (puppyToUpdate) {
+            await fetch('/api/admin/puppies', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                ...puppyToUpdate,
+                status: 'available',
+                deposit_status: 'none',
+                deposit_due_at: null,
+                deposit_reference: null,
+              }),
+            });
+            console.log('✅ Puppy status updated to available after cancellation');
+          }
+        }
+      } catch (error) {
+        console.error('Could not update puppy status in admin:', error);
+      }
+
       setReservations(prev => prev.filter(r => r.id !== id));
     } else {
       const error = await res.json();
