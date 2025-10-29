@@ -1,5 +1,6 @@
 "use client";
 import { useState, FormEvent, useEffect, Suspense } from "react";
+import { supabase } from '@/lib/supabase';
 import Link from "next/link";
 import emailjs from '@emailjs/browser';
 import { useSearchParams } from 'next/navigation';
@@ -138,6 +139,24 @@ function ReservePageContent() {
           } catch (error) {
             console.error('Could not update puppy status in admin:', error);
           }
+        }
+
+        // Create reservation record for logged-in user
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await fetch('/api/reservations', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                puppy_id: searchParams.get('puppyId'),
+                deposit_due_at: dueAtIso,
+              }),
+            });
+            console.log('✅ Reservation record created for user');
+          }
+        } catch (error) {
+          console.warn('Could not create reservation row (user may be anonymous):', error);
         }
         
         // Add puppy to reserved list in localStorage
