@@ -196,26 +196,27 @@ export async function DELETE(request: NextRequest) {
     const urlsToDelete = [puppy?.image, ...(extraImages?.map((r: any) => r.url) || [])].filter(Boolean) as string[];
     for (const u of urlsToDelete) {
       if (u && u.includes('supabase.co/storage')) {
-      try {
-        const url = new URL(u);
-        const pathParts = url.pathname.split('/');
-        const bucketIndex = pathParts.indexOf('puppy-images');
-        
-        if (bucketIndex !== -1) {
-          const filePath = pathParts.slice(bucketIndex + 1).join('/');
+        try {
+          const url = new URL(u);
+          const pathParts = url.pathname.split('/');
+          const bucketIndex = pathParts.indexOf('puppy-images');
           
-          const { error: storageError } = await supabase.storage
-            .from('puppy-images')
-            .remove([filePath]);
-          
-          if (storageError) {
-            console.error('Error deleting image from storage:', storageError);
-            // Don't fail the whole operation if image deletion fails
+          if (bucketIndex !== -1) {
+            const filePath = pathParts.slice(bucketIndex + 1).join('/');
+            
+            const { error: storageError } = await supabase.storage
+              .from('puppy-images')
+              .remove([filePath]);
+            
+            if (storageError) {
+              console.error('Error deleting image from storage:', storageError);
+              // Don't fail the whole operation if image deletion fails
+            }
           }
+        } catch (imgError) {
+          console.error('Error processing image deletion:', imgError);
+          // Don't fail the whole operation if image deletion fails
         }
-      } catch (imgError) {
-        console.error('Error processing image deletion:', imgError);
-        // Don't fail the whole operation if image deletion fails
       }
     }
 
