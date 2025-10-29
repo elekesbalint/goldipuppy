@@ -45,7 +45,7 @@ function LoginPageContent() {
           </div>
           <h1 className="text-4xl font-black text-gray-800 mb-2">
             <span className="bg-gradient-to-r from-green-600 via-emerald-600 to-blue-600 bg-clip-text text-transparent">
-              Welcome Back!
+              Welcome!
             </span>
           </h1>
           <p className="text-gray-600 text-lg">Sign in to your GoldiPuppy account</p>
