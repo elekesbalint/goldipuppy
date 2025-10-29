@@ -732,7 +732,7 @@ function ReservePageContent() {
                         required
                       />
                       <span>
-                        Elfogadom az <a href="/terms" className="text-green-700 underline">Általános Szerződési Feltételeket (ÁSZF)</a>.
+                        I accept the <a href="/terms" className="text-green-700 underline">Terms of Service (ÁSZF)</a>.
                       </span>
                     </label>
                     <label className="flex items-start gap-3 text-sm text-gray-700">
@@ -744,10 +744,10 @@ function ReservePageContent() {
                         required
                       />
                       <span>
-                        Elfogadom az <a href="/privacy" className="text-green-700 underline">Adatkezelési tájékoztatót</a>.
+                        I accept the <a href="/privacy" className="text-green-700 underline">Privacy Policy (Adatkezelési tájékoztató)</a>.
                       </span>
                     </label>
-                    <p className="text-xs text-gray-500">A foglalás elküldésével kijelented, hogy elmúltál 18 éves.</p>
+                    <p className="text-xs text-gray-500">By submitting the reservation, you declare that you are over 18 years old.</p>
                   </div>
 
                   <div className="flex gap-4">
