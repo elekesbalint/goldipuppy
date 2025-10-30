@@ -76,7 +76,7 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
             shipping: {
               regions: ["EU", "Hungary", "Europe"],
               deliveryTime: "2-4 weeks",
-              price: "€150-300",
+              price: "By private agreement",
             },
             healthCertificate: "Complete health certificate included",
             reserved: foundPuppy.status === 'reserved' || foundPuppy.status === 'sold',
