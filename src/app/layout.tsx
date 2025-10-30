@@ -49,6 +49,9 @@ export const metadata: Metadata = {
     description:
       "Find your perfect puppy from trusted, ethical breeders. Safe process, worldwide delivery, expert support — GoldiPuppy.",
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GSC_VERIFICATION,
+  },
 };
 
 export default function RootLayout({
