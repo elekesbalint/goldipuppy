@@ -17,12 +17,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.goldipuppy.com"),
   title: {
     default: "Buy a Puppy Online Safely | Ethically Bred Puppies | GoldiPuppy",
     template: "%s | GoldiPuppy",
   },
   description:
     "Find your perfect puppy from trusted, ethical breeders. Safe process, worldwide delivery, expert support — GoldiPuppy.",
+  alternates: {
+    canonical: "/",
+  },
   keywords: [
     "buy a puppy",
     "puppies for sale",
