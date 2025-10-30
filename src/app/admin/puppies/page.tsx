@@ -12,6 +12,8 @@ interface Puppy {
   status: 'available' | 'reserved' | 'sold';
   gender: 'Male' | 'Female';
   age: string;
+  dob?: string | null;
+  weight?: string | null;
   size: 'Toy' | 'Small' | 'Large';
   location: string;
   description: string;
@@ -40,6 +42,8 @@ export default function AdminPuppiesPage() {
     status: 'available',
     gender: 'Male',
     age: '',
+    dob: '',
+    weight: '',
     size: 'Small',
     location: '',
     description: '',
@@ -148,6 +152,8 @@ export default function AdminPuppiesPage() {
       status: 'available',
       gender: 'Male',
       age: '',
+      dob: '',
+      weight: '',
       size: 'Small',
       location: '',
       description: '',
@@ -300,6 +306,31 @@ export default function AdminPuppiesPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   />
                 </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Születési dátum
+                </label>
+                <input
+                  type="date"
+                  value={formData.dob || ''}
+                  onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Súly (pl. 3.2 kg)
+                </label>
+                <input
+                  type="text"
+                  placeholder="pl. 3.2 kg"
+                  value={formData.weight || ''}
+                  onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                />
+              </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">

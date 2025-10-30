@@ -30,6 +30,8 @@ export interface Puppy {
   status: 'available' | 'reserved' | 'sold';
   gender: 'Male' | 'Female';
   age: string;
+  dob?: string | null;
+  weight?: string | null;
   size: 'Toy' | 'Small' | 'Large';
   location: string;
   description: string;

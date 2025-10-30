@@ -53,10 +53,10 @@ export default function PuppyProfile({ params }: { params: Promise<{ breed: stri
             size: foundPuppy.size,
             status: foundPuppy.status,
             featured: foundPuppy.featured,
-            dob: "2024-04-10", // Default value - you can enhance this later
+            dob: foundPuppy.dob || '',
             description: foundPuppy.description,
             temperament: "Friendly, playful, loyal", // Default - enhance later
-            weight: "3.2 kg", // Default - enhance later
+            weight: foundPuppy.weight || '',
             vaccinations: "Up to date",
             microchip: "Yes",
             parents: [
