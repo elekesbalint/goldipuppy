@@ -53,8 +53,17 @@ export const metadata: Metadata = {
     google: process.env.NEXT_PUBLIC_GSC_VERIFICATION,
   },
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon.ico",
+    icon: [
+      { url: "https://btjvjemmqwhtoyiifkcn.supabase.co/storage/v1/object/public/puppy-images/public/logo.jpeg" },
+      "/favicon.ico",
+    ],
+    shortcut: [
+      { url: "https://btjvjemmqwhtoyiifkcn.supabase.co/storage/v1/object/public/puppy-images/public/logo.jpeg" },
+      "/favicon.ico",
+    ],
+    apple: {
+      url: "https://btjvjemmqwhtoyiifkcn.supabase.co/storage/v1/object/public/puppy-images/public/logo.jpeg",
+    },
   },
 };
 
